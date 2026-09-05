@@ -60,7 +60,7 @@ export default function AdminDashboard() {
     const match = liveMatches[index];
     if (!match.eventInput.trim()) return;
     const teamName = match.eventTeam === "Home" ? match.homeTeam : match.awayTeam;
-    const detail = `${teamName} | ${match.eventType}: ${match.eventInput.trim()}`;
+    const detail = `${teamName} | ${match.eventType}:${match.eventInput.trim()}`;
     
     const updated = [...liveMatches];
     updated[index].events = [...updated[index].events, detail];
@@ -94,58 +94,4 @@ export default function AdminDashboard() {
   const finishMatch = (index: number) => {
     const match = liveMatches[index];
     if (match.homeTeam === match.awayTeam) {
-      alert(`ပွဲစဉ် (${index + 1}) - အိမ်ကွင်းနှင့် အသင်းအဝေး အသင်းတူနေ၍မရပါ။`);
-      return;
-    }
-
-    const updatedStandings = standings.map((item) => {
-      if (item.team === match.homeTeam) {
-        let w = item.w + (match.homeScore > match.awayScore ? 1 : 0);
-        let d = item.d + (match.homeScore === match.awayScore ? 1 : 0);
-        let l = item.l + (match.homeScore < match.awayScore ? 1 : 0);
-        let gf = item.gf + match.homeScore;
-        let ga = item.ga + match.awayScore;
-        let pts = (w * 3) + (d * 1);
-        return { ...item, p: item.p + 1, w, d, l, gf, ga, pts };
-      }
-      if (item.team === match.awayTeam) {
-        let w = item.w + (match.awayScore > match.homeScore ? 1 : 0);
-        let d = item.d + (match.awayScore === match.homeScore ? 1 : 0);
-        let l = item.l + (match.awayScore < match.homeScore ? 1 : 0);
-        let gf = item.gf + match.awayScore;
-        let ga = item.ga + match.homeScore;
-        let pts = (w * 3) + (d * 1);
-        return { ...item, p: item.p + 1, w, d, l, gf, ga, pts };
-      }
-      return item;
-    });
-
-    updatedStandings.sort((a, b) => {
-      if (b.pts !== a.pts) return b.pts - a.pts;
-      let gdA = a.gf - a.ga;
-      let gdB = b.gf - b.ga;
-      return gdB - gdA;
-    });
-
-    setStandings(updatedStandings);
-    setFixtures([
-      { home: match.homeTeam, away: match.awayTeam, date: "ပြီးဆုံး", score: `${match.homeScore} - ${match.awayScore}`, status: "ပြီးဆုံး", events: match.events }, 
-      ...fixtures
-    ]);
-
-    alert(`ပွဲစဉ် (${index + 1}) - ${match.homeTeam} (${match.homeScore} - ${match.awayScore}) ${match.awayTeam} ပွဲရလဒ်ကို သိမ်းဆည်းပြီးပါပြီ။`);
-  };
-
-  if (!isAdminAuthenticated) {
-    return (
-      <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", fontFamily: "sans-serif" }}>
-        <form onSubmit={handleLogin} style={{ background: "#1e1e1e", padding: "24px", borderRadius: "10px", width: "100%", maxWidth: "350px", border: "1px solid #333", textAlign: "center" }}>
-          <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "16px" }}> Admin Login Required</h2>
-          <p style={{ fontSize: "12px", color: "#888", marginBottom: "16px" }}>ဤနေရာကို Admin တစ်ဦးတည်းသာ ထိန်းချုပ်ခွင့်ရှိသည်။</p>
-          <input 
-            type="password" 
-            placeholder="Admin Password ထည့်ပါ" 
-            value={adminPasswordInput} 
-            onChange={(e) => setAdminPasswordInput(e.target.value)} 
-            style={{ width: "100%", padding:
-
+      alert(`ပွဲစဉ် (${index
