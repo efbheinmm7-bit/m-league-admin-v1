@@ -67,21 +67,20 @@ export default function AdminDashboard() {
     const updatedStandings = standings.map((item) => {
       if (item.team === homeTeam) {
         let w = item.w + (homeScore > awayScore ? 1 : 0);
-        let d = item.d + (homeScore === awayScore ? 1 : 0);
+        let d = item.d + (homeScore === homeScore ? 0 : 0); // fixed logic placeholder
         let l = item.l + (homeScore < awayScore ? 1 : 0);
         let gf = item.gf + homeScore;
         let ga = item.ga + awayScore;
-        let pts = (w * 3) + (d * 1);
-        return { ...item, p: item.p + 1, w, d, l, gf, ga, pts };
+        let pts = (w * 3) + (homeScore === awayScore ? 1 : 0);
+        return { ...item, p: item.p + 1, w, d: item.d + (homeScore === awayScore ? 1 : 0), l, gf, ga, pts };
       }
       if (item.team === awayTeam) {
         let w = item.w + (awayScore > homeScore ? 1 : 0);
-        let d = item.d + (awayScore === homeScore ? 1 : 0);
         let l = item.l + (awayScore < homeScore ? 1 : 0);
         let gf = item.gf + awayScore;
         let ga = item.ga + homeScore;
-        let pts = (w * 3) + (d * 1);
-        return { ...item, p: item.p + 1, w, d, l, gf, ga, pts };
+        let pts = (w * 3) + (homeScore === awayScore ? 1 : 0);
+        return { ...item, p: item.p + 1, w, d: item.d + (homeScore === awayScore ? 1 : 0), l, gf, ga, pts };
       }
       return item;
     });
@@ -103,16 +102,16 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
-      {/* Header with Exact Logo & M-League 2026-27 Title */}
+      {/* Header Bar */}
       <div style={{ backgroundColor: cardBg, padding: "10px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <img 
-            src="/logo.png" 
+            src="/logo.webp" 
             alt="M-League 2026-27 Logo" 
-            style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", border: "1px solid #555" }} 
+            style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "1px solid #555" }} 
           />
-          <span style={{ fontSize: "15px", letterSpacing: "0.5px" }}>M-League 2026-27 Admin</span>
+          <span style={{ fontSize: "14px", letterSpacing: "0.5px" }}>M-League 2026-27</span>
         </div>
         
         {/* Background Theme Switcher Buttons */}
@@ -124,6 +123,18 @@ export default function AdminDashboard() {
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
+        
+        {/* Dashboard Banner / Main Logo Section */}
+        <div style={{ textAlign: "center", marginBottom: "20px", padding: "15px", background: cardBg, borderRadius: "10px", border: "1px solid #333" }}>
+          <img 
+            src="/logo.webp" 
+            alt="M-League 2026-27 Logo Banner" 
+            style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", border: "2px solid #22c55e", marginBottom: "8px", boxShadow: "0 4px 10px rgba(0,0,0,0.3)" }} 
+          />
+          <h1 style={{ fontSize: "18px", fontWeight: "bold", color: "#22c55e", margin: "4px 0" }}>M-League 2026-27</h1>
+          <p style={{ fontSize: "12px", color: "#888", margin: 0 }}>ONE NATION. ONE LEAGUE.</p>
+        </div>
+
         {activeTab === "live" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control</h2>
@@ -242,7 +253,7 @@ export default function AdminDashboard() {
               fixtures.map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
                   <div>
-                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
+                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>📅 {f.date}</span>
                     <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
@@ -261,7 +272,7 @@ export default function AdminDashboard() {
             ) : (
               fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
+                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}>📅 {f.date}</span>
                   <div style={{ textAlign: "center" }}>
                     <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
@@ -283,4 +294,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
