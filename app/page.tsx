@@ -4,6 +4,8 @@ import { useState } from "react";
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("live");
   
+  // နောက်ခံ Theme အရောင် (Dark / Light / Blue / Green) စသည်ဖြင့် ပြောင်းလိုပါက ဒီနေရာမှာ ပြင်နိုင်ပါတယ်။
+  // ဥပမာ - အနက်ရောင်အတွက် "#121212", အဖြူရောင်အတွက် "#f8fafc", အပြာရောင်င့်အတွက် "#0f172a" စသည်ဖြင့် ထည့်ပါ။
   const [bgColor, setBgColor] = useState("#121212"); 
   const [cardBg, setCardBg] = useState("#1e1e1e");
   const [textColor, setTextColor] = useState("#f8fafc");
@@ -103,10 +105,8 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
-      {/* Header Bar */}
-      <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        
-        <span style={{ fontSize: "15px", letterSpacing: "0.5px" }}>M-League Admin Control</span>
+      <div style={{ backgroundColor: cardBg, padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span>M-League Admin Control</span>
         
         {/* Background Theme Switcher Buttons */}
         <div style={{ display: "flex", gap: "6px" }}>
