@@ -19,11 +19,8 @@ export default function AdminDashboard() {
     { team: "Sagaing United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
   ]);
 
-  const [fixtures, setFixtures] = useState([
-    { home: "Thitsar Arman FC", away: "Myawady FC", score: "2 - 2", status: "ပြီးဆုံး" },
-    { home: "Chinland FC", away: "Yadanarbon FC", score: "1 - 2", status: "ပြီးဆုံး" },
-    { home: "Yangon United FC", away: "Shan United FC", score: "vs", status: "ယှဉ်ပြိုင်မည်" },
-  ]);
+  // စတင်ချိန်မှာ ပွဲစဉ်အလွတ်ဖြစ်အောင် ထည့်ထားပါသည် (ကိုယ်တိုင် ထည့်ရပါမည်)
+  const [fixtures, setFixtures] = useState<any[]>([]);
 
   const teamsList = standings.map(s => s.team);
   const [homeTeam, setHomeTeam] = useState(teamsList[0]);
@@ -31,7 +28,6 @@ export default function AdminDashboard() {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
 
-  // New Fixture Inputs
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
 
@@ -173,7 +169,6 @@ export default function AdminDashboard() {
           <div>
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
             
-            {/* Add New Fixture Form */}
             <div style={{ background: "#1e1e1e", padding: "15px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #333" }}>
               <h3 style={{ fontSize: "14px", marginBottom: "10px", color: "#38bdf8" }}>ပွဲစဉ်အသစ် ထည့်ရန်</h3>
               <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
@@ -187,16 +182,19 @@ export default function AdminDashboard() {
               <button onClick={addNewFixture} style={{ width: "100%", padding: "8px", background: "#0ea5e9", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: "pointer" }}>ပွဲစဉ်စာရင်းသို့ ထည့်မည်</button>
             </div>
 
-            {/* Fixtures List */}
-            {fixtures.map((f, i) => (
-              <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
-                <div>
-                  <span style={{ fontSize: "13px", display: "block" }}>{f.home} vs {f.away}</span>
-                  <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+            {fixtures.length === 0 ? (
+              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။ အထက်ပါဖောင်မှတဆင့် ပွဲစဉ်အသစ် ထည့်ပါ။</p>
+            ) : (
+              fixtures.map((f, i) => (
+                <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
+                  <div>
+                    <span style={{ fontSize: "13px", display: "block" }}>{f.home} vs {f.away}</span>
+                    <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+                  </div>
+                  <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "5px 10px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
                 </div>
-                <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "5px 10px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         )}
 
@@ -227,3 +225,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
