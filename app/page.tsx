@@ -59,7 +59,6 @@ export default function MLeagueApp() {
       return;
     }
 
-    // Standings အမှတ်တွက်ချက်ခြင်း
     setStandings((prev) => {
       const updated = prev.map((item) => {
         if (item.team === homeTeam) {
@@ -94,7 +93,6 @@ export default function MLeagueApp() {
       return updated.sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga));
     });
 
-    // Fixtures သို့ ရလဒ်ထည့်ခြင်း
     setFixtures((prev) => [
       { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" },
       ...prev,
@@ -115,7 +113,11 @@ export default function MLeagueApp() {
         {/* Standings Tab */}
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", marginBottom: "15px", color: "#3b82f6" }}>M-League Table</h2>
+            <h2 style={{ fontSize: "16px", marginBottom: "15px" }}>
+              <span style={{ color: "#facc15" }}>eFootball </span>
+              <span style={{ color: "#3b82f6" }}>M</span>
+              <span style={{ color: "#ffffff" }}>-League Table</span>
+            </h2>
             <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e1e1e", borderRadius: "8px", overflow: "hidden" }}>
               <thead>
                 <tr style={{ backgroundColor: "#121212", textAlign: "left", fontSize: "12px", color: "#94a3b8" }}>
