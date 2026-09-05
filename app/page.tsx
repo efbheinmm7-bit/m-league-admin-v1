@@ -103,17 +103,16 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
-      {/* Header with Logo */}
-      <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "16px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      {/* Header with Exact Logo & M-League 2026-27 Title */}
+      <div style={{ backgroundColor: cardBg, padding: "10px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {/* Logo image (public folder ထဲမှာ logo.png လို့ နာမည်ပေးထည့်ထားပါ) */}
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
           <img 
             src="/logo.png" 
-            alt="M-League Logo" 
-            style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover", border: "1px solid #555" }} 
+            alt="M-League 2026-27 Logo" 
+            style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover", border: "1px solid #555" }} 
           />
-          <span>M-League Admin Control</span>
+          <span style={{ fontSize: "15px", letterSpacing: "0.5px" }}>M-League 2026-27 Admin</span>
         </div>
         
         {/* Background Theme Switcher Buttons */}
@@ -284,3 +283,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
