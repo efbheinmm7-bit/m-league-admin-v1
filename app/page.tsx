@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MLeagueApp() {
   const [activeTab, setActiveTab] = useState("standings");
@@ -33,9 +33,33 @@ export default function MLeagueApp() {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
 
+  // မိနစ်နှင့် စက္ကန့်အတွက် State များ
+  const [matchMinutes, setMatchMinutes] = useState(0);
+  const [matchSeconds, setMatchSeconds] = useState(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
   const [matchDate, setMatchDate] = useState("");
+
+  // Timer useEffect (စက္ကန့်အလိုက် အလိုအလျောက် တက်သွားရန်)
+  useEffect(() => {
+    let interval: any = null;
+    if (isTimerRunning) {
+      interval = setInterval(() => {
+        setMatchSeconds(prevSec => {
+          if (prevSec === 59) {
+            setMatchMinutes(prevMin => prevMin + 1);
+            return 0;
+          }
+          return prevSec + 1;
+        });
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning]);
 
   const handleLogin = () => {
     if (pin === "2364") {
@@ -124,6 +148,9 @@ export default function MLeagueApp() {
     setFixtures(updatedFixtures);
     setHomeScore(0);
     setAwayScore(0);
+    setIsTimerRunning(false);
+    setMatchMinutes(0);
+    setMatchSeconds(0);
     alert("ပွဲရလဒ်ကို သိမ်းဆည်းပြီး အမှတ်ပေးဇယားသို့ ထည့်သွင်းပြီးပါပြီ။");
   };
 
@@ -251,6 +278,20 @@ export default function MLeagueApp() {
           <div>
             <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control</h2>
             <div style={{ background: cardBg, padding: "16px", borderRadius: "10px", textAlign: "center", border: "1px solid #333" }}>
+              
+              {/* မိနစ် နှင့် စက္ကန့် ပြသရန်နှင့် ထိန်းချုပ်ရန် */}
+              <div style={{ background: bgColor, padding: "10px", borderRadius: "8px", marginBottom: "15px", border: "1px solid #333" }}>
+                <span style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px" }}>ပွဲချိန် (Timer)</span>
+                <div style={{ fontSize: "22px", fontWeight: "bold", color: "#38bdf8", marginBottom: "8px" }}>
+                  {String(matchMinutes).padStart(2, '0')}:{String(matchSeconds).padStart(2, '0')}
+                </div>
+                <div style={{ display: "flex", justifyContent: "center", gap: "6px" }}>
+                  <button onClick={() => setIsTimerRunning(true)} style={{ padding: "6px 12px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>စတင်မည် (Start)</button>
+                  <button onClick={() => setIsTimerRunning(false)} style={{ padding: "6px 12px", background: "#f59e0b", color: "#fff", border: "none", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>ရပ်တန့်မည် (Pause)</button>
+                  <button onClick={() => { setIsTimerRunning(false); setMatchMinutes(0); setMatchSeconds(0); }} style={{ padding: "6px 12px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "11px", fontWeight: "bold", cursor: "pointer" }}>အစမှပြန်စ (Reset)</button>
+                </div>
+              </div>
+
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "15px" }}>
                 <div>
                   <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px", textAlign: "left" }}>Home Team</label>
