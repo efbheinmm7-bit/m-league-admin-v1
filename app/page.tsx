@@ -2,6 +2,11 @@
 import { useState } from "react";
 
 export default function AdminDashboard() {
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [pin, setPin] = useState("");
+  const ADMIN_PIN = "1234"; // သင်ကြိုက်နှစ်သက်ရာ PIN နံပါတ်ပြောင်းလဲနိုင်သည်
+
   const [activeTab, setActiveTab] = useState("live");
   
   const [bgColor, setBgColor] = useState("#121212"); 
@@ -34,6 +39,15 @@ export default function AdminDashboard() {
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
   const [matchDate, setMatchDate] = useState("");
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pin === ADMIN_PIN) {
+      setIsAuthenticated(true);
+    } else {
+      alert("PIN နံပါတ် မှားယွင်းနေပါသည်။");
+    }
+  };
 
   const addNewFixture = () => {
     if (newHome === newAway) {
@@ -101,11 +115,32 @@ export default function AdminDashboard() {
     alert(`${homeTeam} (${homeScore} - ${awayScore}) ${awayTeam} ပွဲရလဒ်ကို သိမ်းဆည်းပြီး အမှတ်ပေးဇယားသို့ အလိုအလျောက် ထည့်သွင်းပြီးပါပြီ။`);
   };
 
+  // If not authenticated, show Login Screen
+  if (!isAuthenticated) {
+    return (
+      <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "sans-serif", padding: "16px" }}>
+        <form onSubmit={handleLogin} style={{ background: "#1e1e1e", padding: "24px", borderRadius: "10px", width: "100%", maxWidth: "350px", border: "1px solid #333", textAlign: "center" }}>
+          <h2 style={{ fontSize: "18px", marginBottom: "16px", color: "#38bdf8" }}>Admin Login</h2>
+          <p style={{ fontSize: "12px", color: "#888", marginBottom: "20px" }}>ထိန်းချုပ်ရန် Secret PIN ထည့်ပါ။</p>
+          <input 
+            type="password" 
+            placeholder="PIN နံပါတ်ထည့်ပါ (ဥပမာ - 1234)" 
+            value={pin} 
+            onChange={(e) => setPin(e.target.value)} 
+            style={{ width: "100%", padding: "12px", background: "#121212", color: "#f8fafc", border: "1px solid #444", borderRadius: "6px", fontSize: "16px", marginBottom: "15px", boxSizing: "border-box", textAlign: "center" }}
+          />
+          <button type="submit" style={{ width: "100%", padding: "12px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>ဝင်မည်</button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
       {/* Header Bar */}
-      <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
-        <span style={{ color: "#38bdf8" }}>M</span> League One
+      <div style={{ backgroundColor: cardBg, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
+        <div><span style={{ color: "#38bdf8" }}>M</span> League One (Admin)</div>
+        <button onClick={() => setIsAuthenticated(false)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "4px 8px", borderRadius: "4px", fontSize: "11px", cursor: "pointer" }}>Logout</button>
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
@@ -222,12 +257,12 @@ export default function AdminDashboard() {
             </div>
 
             {fixtures.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။ အထက်ပါပုံစံမှတဆင့် ပွဲစဉ်အသစ် ထည့်ပါ။</p>
+              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။</p>
             ) : (
               fixtures.map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
                   <div>
-                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
+                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
                     <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
@@ -246,7 +281,7 @@ export default function AdminDashboard() {
             ) : (
               fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
+                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}>{f.date}</span>
                   <div style={{ textAlign: "center" }}>
                     <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
