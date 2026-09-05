@@ -59,7 +59,6 @@ export default function MLeagueApp() {
       return;
     }
 
-    // Fixtures သို့ ရလဒ်ထည့်ခြင်း (Standings auto-update မလုပ်တော့ပါ)
     setFixtures((prev) => [
       { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" },
       ...prev,
@@ -72,15 +71,18 @@ export default function MLeagueApp() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", fontFamily: "sans-serif", paddingBottom: "70px" }}>
-      <div style={{ backgroundColor: "#1e1e1e", padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
-        M-League Live
+      {/*  အနီရောင်အဝိုင်းနှင့် Efootball M-League Live ထည့်သွင်းထားသည် */}
+      <div style={{ backgroundColor: "#1e1e1e", padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+        <span style={{ height: "10px", width: "10px", backgroundColor: "#ef4444", borderRadius: "50%", display: "inline-block" }}></span>
+        Efootball M-League Live
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
         {/* Standings Tab */}
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", marginBottom: "15px", color: "#3b82f6" }}>M-League Table</h2>
+            {/*  အပြာရောင်စာသားဖြင့် Efootball M-League Table ပြောင်းလဲထားသည် */}
+            <h2 style={{ fontSize: "16px", marginBottom: "15px", color: "#2563eb", fontWeight: "bold" }}>Efootball M-League Table</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e1e1e", borderRadius: "8px", overflow: "hidden" }}>
               <thead>
                 <tr style={{ backgroundColor: "#121212", textAlign: "left", fontSize: "12px", color: "#94a3b8" }}>
