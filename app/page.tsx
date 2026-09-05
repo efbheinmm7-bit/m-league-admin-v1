@@ -41,6 +41,7 @@ export default function AdminDashboard() {
   const [newAway, setNewAway] = useState(teamsList[1]);
   const [matchDate, setMatchDate] = useState("");
 
+  // အမှားပြင်ဆင်ပြီး (hand လို့ရေးထားတာကို handleLogin လို့ပြောင်းလိုက်သည်)
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (adminPasswordInput === ADMIN_SECRET_PASSWORD) {
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
     setLiveMatches(updated);
   };
 
+  // အမှားပြင်ဆင်ပြီး (setFixtures ထဲမှာ လိုအပ်တာတွေ ဖြည့်စွက်ပေးထားသည်)
   const addNewFixture = () => {
     if (newHome === newAway) {
       alert("အိမ်ကွင်းနှင့် အသင်းအဝေး အသင်းတူနေ၍မရပါ။");
@@ -166,7 +168,6 @@ export default function AdminDashboard() {
           <div>
             <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control (ပွဲစဉ် ၄ ခု)</h2>
             
-            {/* ဤနေရာတွင် liveMatches ကို map ဖြင့် ၄ ခုစလုံး ပေါ်လာစေရန် ရေးသားထားပါသည် */}
             {liveMatches.map((match, index) => (
               <div key={index} style={{ background: cardBg, padding: "16px", borderRadius: "10px", marginBottom: "20px", border: "1px solid #333" }}>
                 <div style={{ fontSize: "13px", fontWeight: "bold", color: "#38bdf8", marginBottom: "10px", borderBottom: "1px solid #333", paddingBottom: "6px" }}>
@@ -348,4 +349,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-
