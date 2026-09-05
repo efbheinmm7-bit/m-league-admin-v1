@@ -74,7 +74,7 @@ export default function MLeagueApp() {
     alert("ပွဲပြီးရလဒ် သိမ်းဆည်းပြီးပါပြီ။");
   };
 
-  // Next Match ထည့်သွင်းသည့် Logic
+  // Next Match ထည့်သည့် Logic
   const addNextMatch = () => {
     if (nextHome === nextAway) {
       alert("အသင်းနှစ်သင်း တူနေ၍မရပါ။");
@@ -94,7 +94,7 @@ export default function MLeagueApp() {
     alert("လာမည့်ပွဲစဉ် ထည့်သွင်းပြီးပါပြီ။");
   };
 
-  // Status အလိုက် ခွဲထုတ်ခြင်း
+  // Status ခွဲထုတ်ခြင်း
   const completedMatches = fixtures.filter((f) => f.status === "ပြီးဆုံး");
   const upcomingMatches = fixtures.filter((f) => f.status === "ယှဉ်ပြိုင်မည်");
 
@@ -134,10 +134,10 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Upcoming Matches Tab */}
-        {activeTab === "upcoming" && (
+        {/* Fixtures (Next Matches) Tab */}
+        {activeTab === "fixtures" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>လာမည့် ပွဲစဉ်များ</h2>
+            <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>လာမည့် ပွဲစဉ်များ (Fixtures)</h2>
             {upcomingMatches.length === 0 ? (
               <p style={{ color: "#888", fontSize: "13px" }}>လာမည့်ပွဲစဉ်များ မရှိသေးပါ။</p>
             ) : (
@@ -193,7 +193,7 @@ export default function MLeagueApp() {
         {/* Admin Control */}
         {activeTab === "live" && isAdmin && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            {/* Live Score Section */}
+            {/* Live Match Control */}
             <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
                 <h2 style={{ fontSize: "15px", color: "#22c55e", margin: 0 }}>Match Update</h2>
@@ -224,7 +224,7 @@ export default function MLeagueApp() {
               </button>
             </div>
 
-            {/* Next Match Input Section */}
+            {/* Next Match Input Form */}
             <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
               <h2 style={{ fontSize: "15px", color: "#38bdf8", marginTop: 0, marginBottom: "15px" }}>Next Match ထည့်ရန်</h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -254,7 +254,7 @@ export default function MLeagueApp() {
                 </div>
 
                 <button onClick={addNextMatch} style={{ width: "100%", marginTop: "5px", padding: "10px", background: "#0284c7", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
-                   Next Match သိမ်းမည်
+                  Next Match သိမ်းမည်
                 </button>
               </div>
             </div>
@@ -262,10 +262,10 @@ export default function MLeagueApp() {
         )}
       </div>
 
-      {/* Navigation */}
+      {/* Navigation Bar */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#1e1e1e", display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", fontWeight: "bold" }}>Standings</button>
-        <button onClick={() => setActiveTab("upcoming")} style={{ background: "none", border: "none", color: activeTab === "upcoming" ? "#38bdf8" : "#888", fontWeight: "bold" }}>Upcoming</button>
+        <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#888", fontWeight: "bold" }}>Fixtures</button>
         <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", fontWeight: "bold" }}>Results</button>
         {isAdmin ? (
           <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", fontWeight: "bold" }}>Live Admin</button>
@@ -276,4 +276,3 @@ export default function MLeagueApp() {
     </div>
   );
 }
-
