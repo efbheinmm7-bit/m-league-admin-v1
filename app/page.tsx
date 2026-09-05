@@ -32,6 +32,7 @@ export default function MLeagueApp() {
   const [awayTeam, setAwayTeam] = useState(teamsList[1]);
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
+  const [matchMinute, setMatchMinute] = useState("1'"); // မိနစ်အတွက် State ထည့်သွင်းခြင်း
 
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
@@ -124,6 +125,7 @@ export default function MLeagueApp() {
     setFixtures(updatedFixtures);
     setHomeScore(0);
     setAwayScore(0);
+    setMatchMinute("1'");
     alert("ပွဲရလဒ်ကို သိမ်းဆည်းပြီး အမှတ်ပေးဇယားသို့ ထည့်သွင်းပြီးပါပြီ။");
   };
 
@@ -234,7 +236,7 @@ export default function MLeagueApp() {
               style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px", marginBottom: "12px", boxSizing: "border-box" }} 
             />
             <button onClick={handleLogin} style={{ width: "100%", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer", marginBottom: "10px" }}>ဝင်မည်</button>
-            <button onClick={() => setActiveTab("standings")} style={{ width: "100%", padding: "8px", background: "transparent", color: "#888", border: "1px solid #444", borderRadius: "6px", fontSize: "12px", cursor: "pointer" }}> Back (အသုံးပြုသူနေရာသို့ ပြန်ရန်)</button>
+            <button onClick={() => setActiveTab("standings")} style={{ width: "100%", padding: "8px", background: "transparent", color: "#888", border: "1px solid #444", borderRadius: "6px", fontSize: "12px", cursor: "pointer" }}>← Back (အသုံးပြုသူနေရာသို့ ပြန်ရန်)</button>
           </div>
         )}
 
@@ -242,7 +244,7 @@ export default function MLeagueApp() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
               <h2 style={{ fontSize: "16px", color: "#22c55e", margin: 0 }}>Admin Live Match Control</h2>
-              <button onClick={() => setActiveTab("standings")} style={{ padding: "6px 12px", background: "#334155", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}> Back to User</button>
+              <button onClick={() => setActiveTab("standings")} style={{ padding: "6px 12px", background: "#334155", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}>← Back to User</button>
             </div>
             
             <div style={{ background: cardBg, padding: "16px", borderRadius: "10px", textAlign: "center", border: "1px solid #333" }}>
@@ -254,8 +256,20 @@ export default function MLeagueApp() {
                   </select>
                 </div>
 
+                {/* ပွဲချိန် (Minutes) ပြသရန်နှင့် ဖြည့်ရန် */}
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "12px", color: "#facc15" }}>ပွဲချိန် မိနစ်:</span>
+                  <input 
+                    type="text" 
+                    value={matchMinute} 
+                    onChange={(e) => setMatchMinute(e.target.value)} 
+                    placeholder="ဥပမာ - 45+2'" 
+                    style={{ width: "90px", padding: "6px", textAlign: "center", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px", fontWeight: "bold" }} 
+                  />
+                </div>
+
                 <div style={{ fontSize: "24px", fontWeight: "bold", color: "#22c55e", margin: "5px 0" }}>
-                  {homeScore} - {awayScore}
+                  {homeScore} - {awayScore} <span style={{ fontSize: "12px", color: "#facc15", display: "block" }}>({matchMinute})</span>
                 </div>
 
                 <div>
@@ -282,7 +296,7 @@ export default function MLeagueApp() {
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
               <h2 style={{ fontSize: "16px", color: "#38bdf8", margin: 0 }}>ပွဲစဉ်များ စီမံရန်</h2>
-              <button onClick={() => setActiveTab("standings")} style={{ padding: "6px 12px", background: "#334155", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}> Back to User</button>
+              <button onClick={() => setActiveTab("standings")} style={{ padding: "6px 12px", background: "#334155", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}>← Back to User</button>
             </div>
 
             <div style={{ background: cardBg, padding: "16px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #333" }}>
