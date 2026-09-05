@@ -9,18 +9,18 @@ export default function AdminDashboard() {
   const [textColor, setTextColor] = useState("#f8fafc");
 
   const [standings, setStandings] = useState([
-    { team: "Dagon Star United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yangon United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Ayeyawady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yadanarbon FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Myawady FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Thitsar Arman FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yangon City FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Shan United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "I.S.P.E FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Chinland FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Hantharwady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Sagaing United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Dagon Star United FC", color: "#f59e0b", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Yangon United FC", color: "#ef4444", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Ayeyawady United FC", color: "#3b82f6", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Yadanarbon FC", color: "#eab308", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Myawady FC", color: "#10b981", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Thitsar Arman FC", color: "#8b5cf6", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Yangon City FC", color: "#06b6d4", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Shan United FC", color: "#ec4899", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "I.S.P.E FC", color: "#6366f1", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Chinland FC", color: "#14b8a6", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Hantharwady United FC", color: "#f97316", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Sagaing United FC", color: "#84cc16", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
   ]);
 
   const [fixtures, setFixtures] = useState<any[]>([]);
@@ -34,6 +34,11 @@ export default function AdminDashboard() {
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
   const [matchDate, setMatchDate] = useState("");
+
+  const getTeamColor = (teamName: string) => {
+    const found = standings.find(s => s.team === teamName);
+    return found ? found.color : "#ffffff";
+  };
 
   const addNewFixture = () => {
     if (newHome === newAway) {
@@ -168,7 +173,10 @@ export default function AdminDashboard() {
                     return (
                       <tr key={i} style={{ borderBottom: "1px solid #2a2a2a", fontSize: "13px" }}>
                         <td style={{ padding: "10px", color: "#888" }}>{i + 1}</td>
-                        <td style={{ padding: "10px", fontWeight: "500" }}>{s.team}</td>
+                        <td style={{ padding: "10px", fontWeight: "500", display: "flex", alignItems: "center", gap: "8px" }}>
+                          <span style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: s.color, display: "inline-block" }}></span>
+                          {s.team}
+                        </td>
                         <td style={{ padding: "10px" }}>{s.p}</td>
                         <td style={{ padding: "10px" }}>{s.w}</td>
                         <td style={{ padding: "10px" }}>{s.d}</td>
@@ -228,7 +236,13 @@ export default function AdminDashboard() {
                 <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
                   <div>
                     <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
-                    <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
+                    <div style={{ fontSize: "13px", display: "flex", alignItems: "center", gap: "6px", fontWeight: "bold", margin: "3px 0" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.home) }}></span>
+                      <span>{f.home}</span>
+                      <span style={{ color: "#888", fontWeight: "normal" }}>vs</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.away) }}></span>
+                      <span>{f.away}</span>
+                    </div>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
                   <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
@@ -248,7 +262,13 @@ export default function AdminDashboard() {
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
                   <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
                   <div style={{ textAlign: "center" }}>
-                    <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
+                    <div style={{ fontSize: "13px", display: "flex", justifyContent: "center", alignItems: "center", gap: "6px", fontWeight: "bold" }}>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.home) }}></span>
+                      <span>{f.home}</span>
+                      <span style={{ color: "#888", fontWeight: "normal" }}>vs</span>
+                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.away) }}></span>
+                      <span>{f.away}</span>
+                    </div>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
                   </div>
                 </div>
