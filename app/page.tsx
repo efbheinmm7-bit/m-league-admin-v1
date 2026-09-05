@@ -147,7 +147,7 @@ export default function AdminDashboard() {
 
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>အမှတ်ပေးဇယား (Standings)</h2>
+            <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>M League 2026-27</h2>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", background: cardBg, borderRadius: "8px", overflow: "hidden" }}>
                 <thead>
