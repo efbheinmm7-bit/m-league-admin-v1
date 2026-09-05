@@ -4,8 +4,6 @@ import { useState } from "react";
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("live");
   
-  // နောက်ခံ Theme အရောင် (Dark / Light / Blue / Green) စသည်ဖြင့် ပြောင်းလိုပါက ဒီနေရာမှာ ပြင်နိုင်ပါတယ်။
-  // ဥပမာ - အနက်ရောင်အတွက် "#121212", အဖြူရောင်အတွက် "#f8fafc", အပြာရောင်င့်အတွက် "#0f172a" စသည်ဖြင့် ထည့်ပါ။
   const [bgColor, setBgColor] = useState("#121212"); 
   const [cardBg, setCardBg] = useState("#1e1e1e");
   const [textColor, setTextColor] = useState("#f8fafc");
@@ -108,7 +106,6 @@ export default function AdminDashboard() {
       <div style={{ backgroundColor: cardBg, padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span>M-League Admin Control</span>
         
-        {/* Background Theme Switcher Buttons */}
         <div style={{ display: "flex", gap: "6px" }}>
           <button onClick={() => { setBgColor("#121212"); setCardBg("#1e1e1e"); setTextColor("#f8fafc"); }} style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#121212", border: "2px solid #fff", cursor: "pointer" }} title="Dark Mode"></button>
           <button onClick={() => { setBgColor("#0f172a"); setCardBg("#1e293b"); setTextColor("#f8fafc"); }} style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#0f172a", border: "2px solid #38bdf8", cursor: "pointer" }} title="Blue Dark Mode"></button>
@@ -235,7 +232,7 @@ export default function AdminDashboard() {
               fixtures.map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
                   <div>
-                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
+                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
                     <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
@@ -254,7 +251,7 @@ export default function AdminDashboard() {
             ) : (
               fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
+                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}>{f.date}</span>
                   <div style={{ textAlign: "center" }}>
                     <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
@@ -266,8 +263,7 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      {/* Bottom Navigation */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333", zIndex: 10 }}>
         <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", cursor: "pointer", fontWeight: "bold" }}>Live</button>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
         <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#888", cursor: "pointer", fontWeight: "bold" }}>Fixtures</button>
@@ -276,3 +272,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+k
