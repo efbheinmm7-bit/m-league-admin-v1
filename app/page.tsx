@@ -2,6 +2,11 @@
 import { useState } from "react";
 
 export default function AdminDashboard() {
+  // Admin Password စနစ်အတွက်
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [adminPasswordInput, setAdminPasswordInput] = useState("");
+  const ADMIN_SECRET_PASSWORD = "1234"; // ဒီနေရာမှာ လိုချင်တဲ့ စကားဝှက်ကို ပြောင်းလဲနိုင်ပါတယ်
+
   const [activeTab, setActiveTab] = useState("live");
   
   const [bgColor, setBgColor] = useState("#121212"); 
@@ -26,7 +31,6 @@ export default function AdminDashboard() {
   const [fixtures, setFixtures] = useState<any[]>([]);
   const teamsList = standings.map(s => s.team);
 
-  // ပွဲစဉ် ၄ ခုအတွက် state များ
   const [liveMatches, setLiveMatches] = useState([
     { homeTeam: teamsList[0], awayTeam: teamsList[1], homeScore: 0, awayScore: 0, events: [], eventInput: "", eventTeam: "Home", eventType: " ဂိုး" },
     { homeTeam: teamsList[2], awayTeam: teamsList[3], homeScore: 0, awayScore: 0, events: [], eventInput: "", eventTeam: "Home", eventType: " ဂိုး" },
@@ -38,7 +42,15 @@ export default function AdminDashboard() {
   const [newAway, setNewAway] = useState(teamsList[1]);
   const [matchDate, setMatchDate] = useState("");
 
-  // Live match အချက်အလက်များကို update လုပ်ရန်
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPasswordInput === ADMIN_SECRET_PASSWORD) {
+      setIsAdminAuthenticated(true);
+    } else {
+      alert("စကားဝှက် မှားယွင်းနေပါသည်။");
+    }
+  };
+
   const updateMatchField = (index: number, field: string, value: any) => {
     const updated = [...liveMatches];
     updated[index] = { ...updated[index], [field]: value };
@@ -69,14 +81,7 @@ export default function AdminDashboard() {
       return;
     }
     setFixtures([
-      { 
-        home: newHome, 
-        away: newAway, 
-        date: matchDate || "သတ်မှတ်ရန်", 
-        score: "vs", 
-        status: "ယှဉ်ပြိုင်မည်",
-        events: []
-      }, 
+      { home: newHome, away: newAway, date: matchDate || "သတ်မှတ်ရန်", score: "vs", status: "ယှဉ်ပြိုင်မည်", events: [] }, 
       ...fixtures
     ]);
     alert("ပွဲစဉ်အသစ်နှင့် ရက်စွဲကို ထည့်သွင်းပြီးပါပြီ။");
@@ -125,33 +130,45 @@ export default function AdminDashboard() {
 
     setStandings(updatedStandings);
     setFixtures([
-      { 
-        home: match.homeTeam, 
-        away: match.awayTeam, 
-        date: "ပြီးဆုံး", 
-        score: `${match.homeScore} - ${match.awayScore}`, 
-        status: "ပြီးဆုံး",
-        events: match.events 
-      }, 
+      { home: match.homeTeam, away: match.awayTeam, date: "ပြီးဆုံး", score: `${match.homeScore} - ${match.awayScore}`, status: "ပြီးဆုံး", events: match.events }, 
       ...fixtures
     ]);
 
     alert(`ပွဲစဉ် (${index + 1}) - ${match.homeTeam} (${match.homeScore} - ${match.awayScore}) ${match.awayTeam} ပွဲရလဒ်ကို သိမ်းဆည်းပြီးပါပြီ။`);
   };
 
+  // အကယ်၍ Admin Password မထည့်ရသေးပါက Login Form ကိုပြမည်
+  if (!isAdminAuthenticated) {
+    return (
+      <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", fontFamily: "sans-serif" }}>
+        <form onSubmit={handleLogin} style={{ background: "#1e1e1e", padding: "24px", borderRadius: "10px", width: "100%", maxWidth: "350px", border: "1px solid #333", textAlign: "center" }}>
+          <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "16px" }}> Admin Login Required</h2>
+          <p style={{ fontSize: "12px", color: "#888", marginBottom: "16px" }}>ဤနေရာကို Admin တစ်ဦးတည်းသာ ထိန်းချုပ်ခွင့်ရှိသည်။</p>
+          <input 
+            type="password" 
+            placeholder="Admin Password ထည့်ပါ" 
+            value={adminPasswordInput} 
+            onChange={(e) => setAdminPasswordInput(e.target.value)} 
+            style={{ width: "100%", padding: "10px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "6px", marginBottom: "12px", fontSize: "14px", boxSizing: "border-box" }} 
+          />
+          <button type="submit" style={{ width: "100%", padding: "10px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>ဝင်မည်</button>
+        </form>
+      </div>
+    );
+  }
+
+  // Password မှန်ကန်မှပေါ်မည့် Dashboard ပင်မပုံစံ
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
-      {/* Header Bar */}
       <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333", color: "#ffffff" }}>
-        <span style={{ color: "#38bdf8" }}>M</span> League One
+        <span style={{ color: "#38bdf8" }}>M</span> League One (Admin Control)
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
         {activeTab === "live" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control (ပွဲစဉ် ၄ ခု)</h2>
+            <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Live Match Control (ပွဲစဉ် ၄ ခု)</h2>
             
-            {/* Loop 4 Matches */}
             {liveMatches.map((match, index) => (
               <div key={index} style={{ background: cardBg, padding: "16px", borderRadius: "10px", marginBottom: "20px", border: "1px solid #333" }}>
                 <div style={{ fontSize: "13px", fontWeight: "bold", color: "#38bdf8", marginBottom: "10px", borderBottom: "1px solid #333", paddingBottom: "6px" }}>
@@ -178,7 +195,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Score Control Buttons */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "15px" }}>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
                     <button onClick={() => updateMatchField(index, "homeScore", match.homeScore + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold", fontSize: "12px" }}>Home +1</button>
@@ -190,7 +206,6 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Match Events Input */}
                 <div style={{ textAlign: "left", borderTop: "1px solid #333", paddingTop: "12px" }}>
                   <label style={{ fontSize: "12px", color: "#38bdf8", display: "block", marginBottom: "6px", fontWeight: "bold" }}> ဂိုး/ကတ်ပြစ်ဒဏ် ထည့်ရန်</label>
                   <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
@@ -235,9 +250,7 @@ export default function AdminDashboard() {
 
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#ffffff", marginBottom: "15px" }}>
-              <span style={{ color: "#38bdf8" }}>M</span> League One
-            </h2>
+            <h2 style={{ fontSize: "16px", color: "#ffffff", marginBottom: "15px" }}>Standings</h2>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", background: cardBg, borderRadius: "8px", overflow: "hidden" }}>
                 <thead>
@@ -277,10 +290,8 @@ export default function AdminDashboard() {
         {activeTab === "fixtures" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
-            
             <div style={{ background: cardBg, padding: "16px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #333" }}>
               <h3 style={{ fontSize: "14px", marginBottom: "12px", color: "#38bdf8" }}>ပွဲစဉ်အသစ် ထည့်ရန်</h3>
-              
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "12px" }}>
                 <div>
                   <label style={{ fontSize: "11px", color: "#888", display: "block", marginBottom: "4px" }}>Home Team</label>
@@ -288,77 +299,48 @@ export default function AdminDashboard() {
                     {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
                   </select>
                 </div>
-
                 <div>
                   <label style={{ fontSize: "11px", color: "#888", display: "block", marginBottom: "4px" }}>Away Team</label>
                   <select value={newAway} onChange={(e) => setNewAway(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "13px" }}>
                     {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
                   </select>
                 </div>
-
                 <div>
                   <label style={{ fontSize: "11px", color: "#888", display: "block", marginBottom: "4px" }}>ပွဲစဉ်မည့် ရက်စွဲနှင့် အချိန်</label>
-                  <input 
-                    type="text" 
-                    placeholder="ဥပမာ - June 10, 5:00 PM" 
-                    value={matchDate} 
-                    onChange={(e) => setMatchDate(e.target.value)} 
-                    style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "13px", boxSizing: "border-box" }} 
-                  />
+                  <input type="text" placeholder="ဥပမာ - June 10, 5:00 PM" value={matchDate} onChange={(e) => setMatchDate(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "13px", boxSizing: "border-box" }} />
                 </div>
               </div>
-
               <button onClick={addNewFixture} style={{ width: "100%", padding: "10px", background: "#0ea5e9", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>ပွဲစဉ်စာရင်းသို့ ထည့်မည်</button>
             </div>
 
-            {fixtures.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။</p>
-            ) : (
-              fixtures.map((f, i) => (
-                <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
-                      <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
-                      <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
-                    </div>
-                    <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
+            {fixtures.map((f, i) => (
+              <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
+                    <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
+                    <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
-                  {f.events && f.events.length > 0 && (
-                    <div style={{ marginTop: "8px", borderTop: "1px dashed #333", paddingTop: "6px", fontSize: "11px", color: "#cbd5e1" }}>
-                      <strong>ပွဲစဉ် မှတ်တမ်းများ:</strong>
-                      {f.events.map((ev: string, idx: number) => (
-                        <div key={idx}> {ev}</div>
-                      ))}
-                    </div>
-                  )}
+                  <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
                 </div>
-              ))
-            )}
+              </div>
+            ))}
           </div>
         )}
 
         {activeTab === "upcoming" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#2dd4bf", marginBottom: "15px" }}>နောက်လာမည့်ပွဲစဉ်များ</h2>
-            {fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px" }}>ယှဉ်ပြိုင်ရန် ကျန်ရှိသော ပွဲစဉ် မရှိသေးပါ။</p>
-            ) : (
-              fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
-                <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
-                  <div style={{ textAlign: "center" }}>
-                    <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
-                    <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
-                  </div>
-                </div>
-              ))
-            )}
+            {fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
+              <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333", textAlign: "center" }}>
+                <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
+                <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Bottom Navigation */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
         <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", cursor: "pointer", fontWeight: "bold" }}>Live</button>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
