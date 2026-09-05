@@ -2,99 +2,142 @@
 import { useState } from "react";
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [teams, setTeams] = useState(["Dagon Star United FC", "Yangon United FC", "Shan United", "Hanthawaddy United"]);
-  const [newTeam, setNewTeam] = useState("");
+  const [activeTab, setActiveTab] = useState("live");
   
-  const [matches, setMatches] = useState([
-    { id: 1, home: "Dagon Star United FC", away: "Yangon United FC", score: "0 - 0", status: "Upcoming" }
-  ]);
-  const [homeTeam, setHomeTeam] = useState(teams[0]);
-  const [awayTeam, setAwayTeam] = useState(teams[1]);
-
-  const addTeam = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newTeam.trim() && !teams.includes(newTeam)) {
-      setTeams([...teams, newTeam.trim()]);
-      setNewTeam("");
-    }
+  const teamLogos: { [key: string]: string } = {
+    'Yangon United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Yangon_United_FC_logo.svg/220px-Yangon_United_FC_logo.svg.png',
+    'Shan United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1d/Shan_United_FC_logo.png/220px-Shan_United_FC_logo.png',
+    'Myawady FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/c/ca/Myawady_FC_logo.png/220px-Myawady_FC_logo.png',
+    'Dagon Star United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Dagon_FC.png/180px-Dagon_FC.png',
+    'Ayeyawady United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4b/Ayeyawady_United_FC_logo.png/220px-Ayeyawady_United_FC_logo.png',
+    'Yadanarbon FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/Yadanarbon_FC_logo.png/220px-Yadanarbon_FC_logo.png',
+    'Thitsar Arman FC': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Thitsar_Arman_FC_logo.png/220px-Thitsar_Arman_FC_logo.png',
+    'Hantharwady United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Hantharwady_United_FC_logo.png/220px-Hantharwady_United_FC_logo.png',
   };
 
-  const addMatch = () => {
-    setMatches([...matches, { id: matches.length + 1, home: homeTeam, away: awayTeam, score: "0 - 0", status: "Live" }]);
+  const [standings, setStandings] = useState([
+    { team: "Dagon Star United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Yangon United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Ayeyawady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Yadanarbon FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Myawady FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Thitsar Arman FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Shan United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    { team: "Hantharwady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+  ]);
+
+  const [fixtures, setFixtures] = useState([
+    { home: "Thitsar Arman FC", away: "Myawady FC", score: "2 - 2", status: "ပြီးဆုံး" },
+    { home: "Chinland FC", away: "Yadanarbon FC", score: "1 - 2", status: "ပြီးဆုံး" },
+    { home: "Yangon United FC", away: "Shan United FC", score: "vs", status: "ယှဉ်ပြိုင်မည်" },
+  ]);
+
+  const teamsList = standings.map(s => s.team);
+  const [homeTeam, setHomeTeam] = useState(teamsList[0]);
+  const [awayTeam, setAwayTeam] = useState(teamsList[1]);
+  const [homeScore, setHomeScore] = useState(0);
+  const [awayScore, setAwayScore] = useState(0);
+
+  const finishMatch = () => {
+    setFixtures([{ home: homeTeam, away: awayTeam, score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" }, ...fixtures]);
+    alert(`${homeTeam} (${homeScore} - ${awayScore}) ${awayTeam} ပွဲရလဒ်ကို သိမ်းဆည်းပြီးပါပြီ။`);
   };
 
   return (
-    <div style={{ padding: "30px", fontFamily: "sans-serif", backgroundColor: "#0f172a", color: "#f8fafc", minHeight: "100vh" }}>
-      <h1 style={{ fontSize: "26px", fontWeight: "bold", marginBottom: "10px" }}>M-League Admin Dashboard</h1>
-      <p style={{ color: "#94a3b8", marginBottom: "20px" }}>Manage teams, fixtures, and live match controls.</p>
-
-      <div style={{ display: "flex", gap: "10px", marginBottom: "30px" }}>
-        <button onClick={() => setActiveTab("dashboard")} style={{ padding: "10px 20px", background: activeTab === "dashboard" ? "#2563eb" : "#1e293b", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>Dashboard</button>
-        <button onClick={() => setActiveTab("teams")} style={{ padding: "10px 20px", background: activeTab === "teams" ? "#2563eb" : "#1e293b", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>Teams</button>
-        <button onClick={() => setActiveTab("fixtures")} style={{ padding: "10px 20px", background: activeTab === "fixtures" ? "#2563eb" : "#1e293b", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>Fixtures</button>
+    <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", fontFamily: "sans-serif", paddingBottom: "60px" }}>
+      <div style={{ backgroundColor: "#1e1e1e", padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
+        M-League Admin Control
       </div>
 
-      {activeTab === "dashboard" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "20px" }}>
-          <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-            <h3>Total Teams</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "10px" }}>{teams.length}</p>
-          </div>
-          <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-            <h3>Total Matches</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "10px" }}>{matches.length}</p>
-          </div>
-          <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-            <h3>Status</h3>
-            <p style={{ fontSize: "18px", color: "#22c55e", fontWeight: "bold", marginTop: "10px" }}>Active / Live</p>
-          </div>
-        </div>
-      )}
-
-      {activeTab === "teams" && (
-        <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <h3>Add New Team</h3>
-          <form onSubmit={addTeam} style={{ display: "flex", gap: "10px", marginTop: "15px", marginBottom: "20px" }}>
-            <input type="text" value={newTeam} onChange={(e) => setNewTeam(e.target.value)} placeholder="Team name..." style={{ padding: "10px", borderRadius: "6px", border: "1px solid #475569", background: "#0f172a", color: "#fff", flex: 1 }} />
-            <button type="submit" style={{ padding: "10px 20px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>Add</button>
-          </form>
-          <h3>Teams List ({teams.length})</h3>
-          <ul style={{ marginTop: "10px", paddingLeft: "20px" }}>
-            {teams.map((t, i) => <li key={i} style={{ padding: "4px 0", color: "#cbd5e1" }}>{t}</li>)}
-          </ul>
-        </div>
-      )}
-
-      {activeTab === "fixtures" && (
-        <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <h3>Create Match</h3>
-          <div style={{ display: "flex", gap: "15px", marginTop: "15px", flexWrap: "wrap" }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: "block", marginBottom: "5px" }}>Home Team</label>
-              <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: "#0f172a", color: "#fff", border: "1px solid #475569", borderRadius: "6px" }}>
-                {teams.map((t, i) => <option key={i} value={t}>{t}</option>)}
-              </select>
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: "block", marginBottom: "5px" }}>Away Team</label>
-              <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: "#0f172a", color: "#fff", border: "1px solid #475569", borderRadius: "6px" }}>
-                {teams.map((t, i) => <option key={i} value={t}>{t}</option>)}
-              </select>
+      <div style={{ padding: "20px" }}>
+        {activeTab === "live" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control</h2>
+            <div style={{ background: "#1e1e1e", padding: "20px", borderRadius: "10px", textAlign: "center" }}>
+              <div style={{ display: "flex", justifyContent: "space-around", alignItems: "center" }}>
+                <div>
+                  <p style={{ fontWeight: "bold", fontSize: "14px" }}>{homeTeam}</p>
+                </div>
+                <div style={{ fontSize: "24px", fontWeight: "bold", color: "#22c55e" }}>
+                  {homeScore} - {awayScore}
+                </div>
+                <div>
+                  <p style={{ fontWeight: "bold", fontSize: "14px" }}>{awayTeam}</p>
+                </div>
+              </div>
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button onClick={() => setHomeScore(homeScore + 1)} style={{ padding: "8px 12px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "5px" }}>Home +1</button>
+                <button onClick={() => setAwayScore(awayScore + 1)} style={{ padding: "8px 12px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "5px" }}>Away +1</button>
+              </div>
+              <button onClick={finishMatch} style={{ width: "100%", marginTop: "20px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "5px", fontWeight: "bold" }}>ပွဲသိမ်းမည် (Standings သို့ Auto ထည့်မည်)</button>
             </div>
           </div>
-          <button onClick={addMatch} style={{ marginTop: "15px", padding: "10px 20px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", cursor: "pointer" }}>Publish Match</button>
+        )}
 
-          <h3 style={{ marginTop: "30px" }}>Matches List</h3>
-          {matches.map((m) => (
-            <div key={m.id} style={{ display: "flex", justifyContent: "space-between", padding: "12px", background: "#0f172a", marginTop: "10px", borderRadius: "6px", border: "1px solid #334155" }}>
-              <span>{m.home} vs {m.away}</span>
-              <span>{m.score}</span>
-              <span style={{ color: "#22c55e" }}>{m.status}</span>
+        {activeTab === "standings" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>အမှတ်ပေးဇယား (Standings)</h2>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e1e1e" }}>
+                <thead>
+                  <tr style={{ borderBottom: "1px solid #333", textAlign: "left", fontSize: "12px", color: "#94a3b8" }}>
+                    <th style={{ padding: "10px" }}>Team</th>
+                    <th style={{ padding: "10px" }}>P</th>
+                    <th style={{ padding: "10px" }}>W</th>
+                    <th style={{ padding: "10px" }}>D</th>
+                    <th style={{ padding: "10px" }}>L</th>
+                    <th style={{ padding: "10px" }}>PTS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {standings.map((s, i) => (
+                    <tr key={i} style={{ borderBottom: "1px solid #262626", fontSize: "13px" }}>
+                      <td style={{ padding: "10px" }}>{s.team}</td>
+                      <td style={{ padding: "10px" }}>{s.p}</td>
+                      <td style={{ padding: "10px" }}>{s.w}</td>
+                      <td style={{ padding: "10px" }}>{s.d}</td>
+                      <td style={{ padding: "10px" }}>{s.l}</td>
+                      <td style={{ padding: "10px", fontWeight: "bold", color: "#22c55e" }}>{s.pts}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        )}
+
+        {activeTab === "fixtures" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
+            {fixtures.map((f, i) => (
+              <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>{f.home} vs {f.away}</span>
+                <span style={{ color: "#22c55e", fontWeight: "bold" }}>{f.score} ({f.status})</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {activeTab === "upcoming" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#2dd4bf", marginBottom: "15px" }}>နောက်လာမည့်ပွဲစဉ်များ</h2>
+            {fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
+              <div key={i} style={{ background: "#1e1e1e", padding: "15px", marginBottom: "10px", borderRadius: "8px", textAlign: "center" }}>
+                <strong>{f.home}</strong> vs <strong>{f.away}</strong>
+                <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Navigation */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#1e1e1e", display: "flex", justifyContent: "space-around", padding: "10px 0", borderTop: "1px solid #333" }}>
+        <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", cursor: "pointer" }}>Live</button>
+        <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer" }}>Standings</button>
+        <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#888", cursor: "pointer" }}>Fixtures</button>
+        <button onClick={() => setActiveTab("upcoming")} style={{ background: "none", border: "none", color: activeTab === "upcoming" ? "#2dd4bf" : "#888", cursor: "pointer" }}>နောက်လာမည်</button>
+      </div>
     </div>
   );
 }
