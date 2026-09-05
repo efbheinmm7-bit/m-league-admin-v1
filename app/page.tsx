@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 
 interface TeamStanding {
@@ -16,15 +17,24 @@ interface Fixture {
   home: string;
   away: string;
   date: string;
+  time: string;
   score: string;
   status: "ယှဉ်ပြိုင်မည်" | "ပြီးဆုံး";
 }
 
 const INITIAL_TEAMS = [
-  "Dagon Star United FC", "Yangon United FC", "Ayeyawady United FC",
-  "Yadanarbon FC", "Myawady FC", "Thitsar Arman FC",
-  "Yangon City FC", "Shan United FC", "I.S.P.E FC",
-  "Chinland FC", "Hantharwady United FC", "Sagaing United FC"
+  "Dagon Star United FC",
+  "Yangon United FC",
+  "Ayeyawady United FC",
+  "Yadanarbon FC",
+  "Myawady FC",
+  "Thitsar Arman FC",
+  "Yangon City FC",
+  "Shan United FC",
+  "I.S.P.E FC",
+  "Chinland FC",
+  "Hantharwady United FC",
+  "Sagaing United FC",
 ];
 
 export default function MLeagueApp() {
@@ -33,15 +43,30 @@ export default function MLeagueApp() {
   const [pin, setPin] = useState("");
 
   const [standings, setStandings] = useState<TeamStanding[]>(
-    INITIAL_TEAMS.map((team) => ({ team, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }))
+    INITIAL_TEAMS.map((team) => ({
+      team,
+      p: 0,
+      w: 0,
+      d: 0,
+      l: 0,
+      gf: 0,
+      ga: 0,
+      pts: 0,
+    }))
   );
+
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
 
-  // Admin Live Control States
+  // Admin Match Control
   const [homeTeam, setHomeTeam] = useState(INITIAL_TEAMS[0]);
   const [awayTeam, setAwayTeam] = useState(INITIAL_TEAMS[1]);
+
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
+
+  // NEW: Match Date & Time
+  const [matchDate, setMatchDate] = useState("");
+  const [matchTime, setMatchTime] = useState("");
 
   const handleLogin = () => {
     if (pin === "2364") {
@@ -53,9 +78,42 @@ export default function MLeagueApp() {
     }
   };
 
+  const addFixture = () => {
+    if (homeTeam === awayTeam) {
+      alert("အသင်းနှစ်သင်း တူနေ၍မရပါ။");
+      return;
+    }
+
+    if (!matchDate || !matchTime) {
+      alert("ပွဲရက်နဲ့ ပွဲစချိန် ထည့်ပေးပါ။");
+      return;
+    }
+
+    const newFixture: Fixture = {
+      home: homeTeam,
+      away: awayTeam,
+      date: matchDate,
+      time: matchTime,
+      score: "-",
+      status: "ယှဉ်ပြိုင်မည်",
+    };
+
+    setFixtures((prev) => [newFixture, ...prev]);
+
+    alert("ပွဲစဉ်ကို သိမ်းဆည်းပြီးပါပြီ။");
+
+    setMatchDate("");
+    setMatchTime("");
+  };
+
   const finishMatch = () => {
     if (homeTeam === awayTeam) {
       alert("အသင်းနှစ်သင်း တူနေ၍မရပါ။");
+      return;
+    }
+
+    if (!matchDate || !matchTime) {
+      alert("ပွဲရက်နဲ့ ပွဲစချိန် ထည့်ပေးပါ။");
       return;
     }
 
@@ -65,62 +123,124 @@ export default function MLeagueApp() {
           const w = item.w + (homeScore > awayScore ? 1 : 0);
           const d = item.d + (homeScore === awayScore ? 1 : 0);
           const l = item.l + (homeScore < awayScore ? 1 : 0);
+
           return {
             ...item,
             p: item.p + 1,
-            w, d, l,
+            w,
+            d,
+            l,
             gf: item.gf + homeScore,
             ga: item.ga + awayScore,
-            pts: w * 3 + d * 1,
+            pts: w * 3 + d,
           };
         }
+
         if (item.team === awayTeam) {
           const w = item.w + (awayScore > homeScore ? 1 : 0);
-          const d = item.d + (awayScore === homeScore ? 1 : 0);
+          const d = item.d + (homeScore === awayScore ? 1 : 0);
           const l = item.l + (awayScore < homeScore ? 1 : 0);
+
           return {
             ...item,
             p: item.p + 1,
-            w, d, l,
+            w,
+            d,
+            l,
             gf: item.gf + awayScore,
             ga: item.ga + homeScore,
-            pts: w * 3 + d * 1,
+            pts: w * 3 + d,
           };
         }
+
         return item;
       });
 
-      return updated.sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga));
+      return updated.sort(
+        (a, b) =>
+          b.pts - a.pts ||
+          (b.gf - b.ga) - (a.gf - a.ga)
+      );
     });
 
     setFixtures((prev) => [
-      { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" },
+      {
+        home: homeTeam,
+        away: awayTeam,
+        date: matchDate,
+        time: matchTime,
+        score: `${homeScore} - ${awayScore}`,
+        status: "ပြီးဆုံး",
+      },
       ...prev,
     ]);
 
     setHomeScore(0);
     setAwayScore(0);
+
     alert("ပွဲပြီးရလဒ် သိမ်းဆည်းပြီးပါပြီ။");
   };
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", fontFamily: "sans-serif", paddingBottom: "70px" }}>
-      <div style={{ backgroundColor: "#1e1e1e", padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#121212",
+        color: "#f8fafc",
+        fontFamily: "sans-serif",
+        paddingBottom: "70px",
+      }}
+    >
+      {/* Header */}
+      <div
+        style={{
+          backgroundColor: "#1e1e1e",
+          padding: "16px",
+          textAlign: "center",
+          fontSize: "18px",
+          fontWeight: "bold",
+          borderBottom: "1px solid #333",
+        }}
+      >
         M-League Live
       </div>
 
-      <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
-        {/* Standings Tab */}
+      <div
+        style={{
+          padding: "16px",
+          maxWidth: "600px",
+          margin: "0 auto",
+        }}
+      >
+        {/* STANDINGS */}
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", marginBottom: "15px" }}>
-              <span style={{ color: "#facc15" }}>eFootball </span>
-              <span style={{ color: "#3b82f6" }}>M</span>
-              <span style={{ color: "#ffffff" }}>-League Table</span>
+            <h2
+              style={{
+                fontSize: "16px",
+                marginBottom: "15px",
+                color: "#3b82f6",
+              }}
+            >
+              M-League Table
             </h2>
-            <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e1e1e", borderRadius: "8px", overflow: "hidden" }}>
+
+            <table
+              style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                background: "#1e1e1e",
+              }}
+            >
               <thead>
-                <tr style={{ backgroundColor: "#121212", textAlign: "left", fontSize: "12px", color: "#94a3b8" }}>
+                <tr
+                  style={{
+                    backgroundColor: "#121212",
+                    textAlign: "left",
+                    fontSize: "12px",
+                    color: "#94a3b8",
+                  }}
+                >
                   <th style={{ padding: "10px" }}>#</th>
                   <th style={{ padding: "10px" }}>Team</th>
                   <th style={{ padding: "10px" }}>P</th>
@@ -128,14 +248,41 @@ export default function MLeagueApp() {
                   <th style={{ padding: "10px" }}>PTS</th>
                 </tr>
               </thead>
+
               <tbody>
                 {standings.map((s, i) => (
-                  <tr key={s.team} style={{ borderBottom: "1px solid #2a2a2a", fontSize: "13px" }}>
-                    <td style={{ padding: "10px", color: "#888" }}>{i + 1}</td>
-                    <td style={{ padding: "10px" }}>{s.team}</td>
-                    <td style={{ padding: "10px" }}>{s.p}</td>
-                    <td style={{ padding: "10px" }}>{s.gf - s.ga}</td>
-                    <td style={{ padding: "10px", fontWeight: "bold", color: "#22c55e" }}>{s.pts}</td>
+                  <tr
+                    key={s.team}
+                    style={{
+                      borderBottom: "1px solid #2a2a2a",
+                      fontSize: "13px",
+                    }}
+                  >
+                    <td style={{ padding: "10px", color: "#888" }}>
+                      {i + 1}
+                    </td>
+
+                    <td style={{ padding: "10px" }}>
+                      {s.team}
+                    </td>
+
+                    <td style={{ padding: "10px" }}>
+                      {s.p}
+                    </td>
+
+                    <td style={{ padding: "10px" }}>
+                      {s.gf - s.ga}
+                    </td>
+
+                    <td
+                      style={{
+                        padding: "10px",
+                        fontWeight: "bold",
+                        color: "#22c55e",
+                      }}
+                    >
+                      {s.pts}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -143,83 +290,475 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Results Tab */}
+        {/* RESULTS */}
         {activeTab === "results" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#facc15", marginBottom: "15px" }}>ပွဲပြီးရလဒ်များ</h2>
+            <h2
+              style={{
+                fontSize: "16px",
+                color: "#facc15",
+                marginBottom: "15px",
+              }}
+            >
+              ပွဲစဉ်များ / ရလဒ်များ
+            </h2>
+
             {fixtures.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px" }}>ပွဲရလဒ်များ မရှိသေးပါ။</p>
+              <p
+                style={{
+                  color: "#888",
+                  fontSize: "13px",
+                }}
+              >
+                ပွဲစဉ်များ မရှိသေးပါ။
+              </p>
             ) : (
               fixtures.map((f, i) => (
-                <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "8px", borderRadius: "8px", border: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <span style={{ fontSize: "13px", flex: 1, textAlign: "right" }}>{f.home}</span>
-                  <span style={{ fontSize: "15px", fontWeight: "bold", color: "#22c55e", margin: "0 10px", background: "#121212", padding: "4px 8px", borderRadius: "4px" }}>{f.score}</span>
-                  <span style={{ fontSize: "13px", flex: 1, textAlign: "left" }}>{f.away}</span>
+                <div
+                  key={i}
+                  style={{
+                    background: "#1e1e1e",
+                    padding: "14px",
+                    marginBottom: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid #333",
+                  }}
+                >
+                  {/* Date & Time */}
+                  <div
+                    style={{
+                      textAlign: "center",
+                      color: "#94a3b8",
+                      fontSize: "12px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    📅 {f.date} &nbsp; ⏰ {f.time}
+                  </div>
+
+                  {/* Teams */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        flex: 1,
+                        textAlign: "right",
+                      }}
+                    >
+                      {f.home}
+                    </span>
+
+                    <span
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: "bold",
+                        color:
+                          f.status === "ပြီးဆုံး"
+                            ? "#22c55e"
+                            : "#facc15",
+                        margin: "0 10px",
+                        background: "#121212",
+                        padding: "5px 9px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {f.score}
+                    </span>
+
+                    <span
+                      style={{
+                        fontSize: "13px",
+                        flex: 1,
+                        textAlign: "left",
+                      }}
+                    >
+                      {f.away}
+                    </span>
+                  </div>
+
+                  {/* Status */}
+                  <div
+                    style={{
+                      textAlign: "center",
+                      marginTop: "8px",
+                      fontSize: "11px",
+                      color:
+                        f.status === "ပြီးဆုံး"
+                          ? "#22c55e"
+                          : "#facc15",
+                    }}
+                  >
+                    {f.status}
+                  </div>
                 </div>
               ))
             )}
           </div>
         )}
 
-        {/* Admin Login */}
+        {/* ADMIN LOGIN */}
         {activeTab === "admin" && !isAdmin && (
-          <div style={{ background: "#1e1e1e", padding: "20px", borderRadius: "10px", textAlign: "center", border: "1px solid #333", marginTop: "30px" }}>
-            <h3 style={{ fontSize: "16px", marginBottom: "12px" }}>Admin Login</h3>
+          <div
+            style={{
+              background: "#1e1e1e",
+              padding: "20px",
+              borderRadius: "10px",
+              textAlign: "center",
+              border: "1px solid #333",
+              marginTop: "30px",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "16px",
+                marginBottom: "12px",
+              }}
+            >
+              Admin Login
+            </h3>
+
             <input
               type="password"
               placeholder="PIN"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
-              style={{ width: "100%", padding: "10px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "6px", marginBottom: "12px", boxSizing: "border-box" }}
+              style={{
+                width: "100%",
+                padding: "10px",
+                background: "#121212",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "6px",
+                marginBottom: "12px",
+                boxSizing: "border-box",
+              }}
             />
-            <button onClick={handleLogin} style={{ width: "100%", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
+
+            <button
+              onClick={handleLogin}
+              style={{
+                width: "100%",
+                padding: "10px",
+                background: "#2563eb",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+              }}
+            >
               ဝင်မည်
             </button>
           </div>
         )}
 
-        {/* Admin Control */}
+        {/* ADMIN */}
         {activeTab === "live" && isAdmin && (
-          <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
-              <h2 style={{ fontSize: "15px", color: "#22c55e", margin: 0 }}>Match Update</h2>
-              <button onClick={() => setIsAdmin(false)} style={{ padding: "4px 8px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px" }}>Logout</button>
+          <div
+            style={{
+              background: "#1e1e1e",
+              padding: "16px",
+              borderRadius: "10px",
+              border: "1px solid #333",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                marginBottom: "15px",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "15px",
+                  color: "#22c55e",
+                  margin: 0,
+                }}
+              >
+                Match Control
+              </h2>
+
+              <button
+                onClick={() => setIsAdmin(false)}
+                style={{
+                  padding: "4px 8px",
+                  background: "#dc2626",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                  fontSize: "12px",
+                }}
+              >
+                Logout
+              </button>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
-                {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+            {/* DATE */}
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                color: "#94a3b8",
+                marginBottom: "5px",
+              }}
+            >
+              📅 ပွဲရက်
+            </label>
 
-              <div style={{ textAlign: "center", fontSize: "20px", fontWeight: "bold", color: "#22c55e", margin: "5px 0" }}>
-                {homeScore} - {awayScore}
-              </div>
+            <input
+              type="date"
+              value={matchDate}
+              onChange={(e) => setMatchDate(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "9px",
+                background: "#121212",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "5px",
+                boxSizing: "border-box",
+                marginBottom: "12px",
+              }}
+            />
 
-              <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
-                {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+            {/* TIME */}
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                color: "#94a3b8",
+                marginBottom: "5px",
+              }}
+            >
+              ⏰ ပွဲစချိန်
+            </label>
+
+            <input
+              type="time"
+              value={matchTime}
+              onChange={(e) => setMatchTime(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "9px",
+                background: "#121212",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "5px",
+                boxSizing: "border-box",
+                marginBottom: "15px",
+              }}
+            />
+
+            {/* HOME TEAM */}
+            <select
+              value={homeTeam}
+              onChange={(e) => setHomeTeam(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "9px",
+                background: "#121212",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "4px",
+              }}
+            >
+              {INITIAL_TEAMS.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+
+            {/* SCORE */}
+            <div
+              style={{
+                textAlign: "center",
+                fontSize: "22px",
+                fontWeight: "bold",
+                color: "#22c55e",
+                margin: "10px 0",
+              }}
+            >
+              {homeScore} - {awayScore}
             </div>
 
-            <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-              <button onClick={() => setHomeScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Home +1</button>
-              <button onClick={() => setAwayScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Away +1</button>
+            {/* AWAY TEAM */}
+            <select
+              value={awayTeam}
+              onChange={(e) => setAwayTeam(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "9px",
+                background: "#121212",
+                color: "#fff",
+                border: "1px solid #444",
+                borderRadius: "4px",
+              }}
+            >
+              {INITIAL_TEAMS.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+
+            {/* SCORE BUTTONS */}
+            <div
+              style={{
+                marginTop: "12px",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "6px",
+              }}
+            >
+              <button
+                onClick={() =>
+                  setHomeScore((s) => s + 1)
+                }
+                style={{
+                  padding: "8px",
+                  background: "#22c55e",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                }}
+              >
+                Home +1
+              </button>
+
+              <button
+                onClick={() =>
+                  setAwayScore((s) => s + 1)
+                }
+                style={{
+                  padding: "8px",
+                  background: "#22c55e",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "4px",
+                }}
+              >
+                Away +1
+              </button>
             </div>
 
-            <button onClick={finishMatch} style={{ width: "100%", marginTop: "15px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold" }}>
-              ပွဲသိမ်းမည် (Standings သို့ Auto ပေါင်းမည်)
+            {/* ADD FIXTURE */}
+            <button
+              onClick={addFixture}
+              style={{
+                width: "100%",
+                marginTop: "15px",
+                padding: "10px",
+                background: "#f59e0b",
+                color: "#111",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+              }}
+            >
+              📅 ပွဲစဉ်အဖြစ် သိမ်းမည်
+            </button>
+
+            {/* FINISH MATCH */}
+            <button
+              onClick={finishMatch}
+              style={{
+                width: "100%",
+                marginTop: "8px",
+                padding: "10px",
+                background: "#2563eb",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                fontWeight: "bold",
+              }}
+            >
+              ⚽ ပွဲသိမ်းမည်
             </button>
           </div>
         )}
       </div>
 
-      {/* Navigation */}
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#1e1e1e", display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
-        <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", fontWeight: "bold" }}>Standings</button>
-        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", fontWeight: "bold" }}>Results</button>
+      {/* NAVIGATION */}
+      <div
+        style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          background: "#1e1e1e",
+          display: "flex",
+          justifyContent: "space-around",
+          padding: "12px 0",
+          borderTop: "1px solid #333",
+        }}
+      >
+        <button
+          onClick={() => setActiveTab("standings")}
+          style={{
+            background: "none",
+            border: "none",
+            color:
+              activeTab === "standings"
+                ? "#c084fc"
+                : "#888",
+            fontWeight: "bold",
+          }}
+        >
+          Standings
+        </button>
+
+        <button
+          onClick={() => setActiveTab("results")}
+          style={{
+            background: "none",
+            border: "none",
+            color:
+              activeTab === "results"
+                ? "#facc15"
+                : "#888",
+            fontWeight: "bold",
+          }}
+        >
+          Fixtures
+        </button>
+
         {isAdmin ? (
-          <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", fontWeight: "bold" }}>Live Admin</button>
+          <button
+            onClick={() => setActiveTab("live")}
+            style={{
+              background: "none",
+              border: "none",
+              color:
+                activeTab === "live"
+                  ? "#22c55e"
+                  : "#888",
+              fontWeight: "bold",
+            }}
+          >
+            Live Admin
+          </button>
         ) : (
-          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#888", fontWeight: "bold" }}>Admin</button>
+          <button
+            onClick={() => setActiveTab("admin")}
+            style={{
+              background: "none",
+              border: "none",
+              color:
+                activeTab === "admin"
+                  ? "#3b82f6"
+                  : "#888",
+              fontWeight: "bold",
+            }}
+          >
+            Admin
+          </button>
         )}
       </div>
     </div>
