@@ -119,7 +119,6 @@ export default function MLeagueApp() {
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
-        {/* Standings View */}
         {activeTab === "standings" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>အမှတ်ပေးဇယား (Standings)</h2>
@@ -159,12 +158,11 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Results View (ပြီးခဲ့သောပွဲစဉ် ရလဒ်များ) */}
         {activeTab === "results" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#facc15", marginBottom: "15px" }}>ပွဲပြီးရလဒ်များ (Results)</h2>
             {fixtures.filter(f => f.status === "ပြီးဆုံး").length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px" }}>ပြီးဆုံးုသော ပွဲစဉ် ရလဒ်များ မရှိသေးပါ။</p>
+              <p style={{ color: "#888", fontSize: "13px" }}>ပြီးဆုံးသော ပွဲစဉ် ရလဒ်များ မရှိသေးပါ။</p>
             ) : (
               fixtures.filter(f => f.status === "ပြီးဆုံး").map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333", textAlign: "center" }}>
@@ -180,7 +178,6 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Upcoming Matches View */}
         {activeTab === "upcoming" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#2dd4bf", marginBottom: "15px" }}>နောက်လာမည့်ပွဲစဉ်များ</h2>
@@ -200,14 +197,13 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Admin Login View */}
         {activeTab === "admin" && !isAdmin && (
           <div style={{ background: cardBg, padding: "20px", borderRadius: "10px", textAlign: "center", border: "1px solid #333", marginTop: "40px" }}>
             <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>Admin Login</h3>
             <p style={{ fontSize: "12px", color: "#888", marginBottom: "15px" }}>ထိန်းချုပ်ရန် Secret PIN ထည့်ပါ</p>
             <input 
               type="password" 
-              placeholder="PIN နံပါတ်ထည့်ပါ (ဥပမာ - 2364)" 
+              placeholder="PIN နံပါတ်ထည့်ပါ" 
               value={pin} 
               onChange={(e) => setPin(e.target.value)} 
               style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px", marginBottom: "12px", boxSizing: "border-box" }} 
@@ -216,7 +212,6 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Admin Live Match Control */}
         {activeTab === "live" && isAdmin && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control</h2>
@@ -253,7 +248,6 @@ export default function MLeagueApp() {
           </div>
         )}
 
-        {/* Admin Fixtures Manager */}
         {activeTab === "fixtures" && isAdmin && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
@@ -294,7 +288,6 @@ export default function MLeagueApp() {
         )}
       </div>
 
-      {/* Bottom Navigation */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333", zIndex: 1000 }}>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
         <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", cursor: "pointer", fontWeight: "bold" }}>Results</button>
@@ -312,3 +305,4 @@ export default function MLeagueApp() {
     </div>
   );
 }
+
