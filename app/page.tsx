@@ -4,21 +4,6 @@ import { useState } from "react";
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("live");
   
-  const teamLogos: { [key: string]: string } = {
-    'Yangon United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/d/d4/Yangon_United_FC_logo.svg/220px-Yangon_United_FC_logo.svg.png',
-    'Shan United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/1/1d/Shan_United_FC_logo.png/220px-Shan_United_FC_logo.png',
-    'Myawady FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/c/ca/Myawady_FC_logo.png/220px-Myawady_FC_logo.png',
-    'Dagon Star United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Dagon_FC.png/180px-Dagon_FC.png',
-    'Ayeyawady United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4b/Ayeyawady_United_FC_logo.png/220px-Ayeyawady_United_FC_logo.png',
-    'Yadanarbon FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/a/ad/Yadanarbon_FC_logo.png/220px-Yadanarbon_FC_logo.png',
-    'Thitsar Arman FC': 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Thitsar_Arman_FC_logo.png/220px-Thitsar_Arman_FC_logo.png',
-    'Hantharwady United FC': 'https://upload.wikimedia.org/wikipedia/en/thumb/a/a2/Hantharwady_United_FC_logo.png/220px-Hantharwady_United_FC_logo.png',
-    'Yangon City FC': '',
-    'I.S.P.E FC': '',
-    'Chinland FC': '',
-    'Sagaing United FC': '',
-  };
-
   const [standings, setStandings] = useState([
     { team: "Dagon Star United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
     { team: "Yangon United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
@@ -46,14 +31,30 @@ export default function AdminDashboard() {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
 
-  // Auto Update Standings when match finishes
+  // New Fixture Inputs
+  const [newHome, setNewHome] = useState(teamsList[0]);
+  const [newAway, setNewAway] = useState(teamsList[1]);
+
+  const addNewFixture = () => {
+    if (newHome === newAway) {
+      alert("အိမ်ကွင်းနှင့် အသင်းအဝေး အသင်းတူနေ၍မရပါ။");
+      return;
+    }
+    setFixtures([{ home: newHome, away: newAway, score: "vs", status: "ယှဉ်ပြိုင်မည်" }, ...fixtures]);
+    alert("ပွဲစဉ်အသစ် ထည့်သွင်းပြီးပါပြီ။");
+  };
+
+  const deleteFixture = (index: number) => {
+    const updated = fixtures.filter((_, i) => i !== index);
+    setFixtures(updated);
+  };
+
   const finishMatch = () => {
     if (homeTeam === awayTeam) {
       alert("အိမ်ကွင်းနှင့် အသင်းအဝေး အသင်းတူနေ၍မရပါ။");
       return;
     }
 
-    // Update Standings Logic
     const updatedStandings = standings.map((item) => {
       if (item.team === homeTeam) {
         let w = item.w + (homeScore > awayScore ? 1 : 0);
@@ -76,7 +77,6 @@ export default function AdminDashboard() {
       return item;
     });
 
-    // Sort by Points, then Goal Difference (GD)
     updatedStandings.sort((a, b) => {
       if (b.pts !== a.pts) return b.pts - a.pts;
       let gdA = a.gf - a.ga;
@@ -172,10 +172,29 @@ export default function AdminDashboard() {
         {activeTab === "fixtures" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
+            
+            {/* Add New Fixture Form */}
+            <div style={{ background: "#1e1e1e", padding: "15px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #333" }}>
+              <h3 style={{ fontSize: "14px", marginBottom: "10px", color: "#38bdf8" }}>ပွဲစဉ်အသစ် ထည့်ရန်</h3>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "10px" }}>
+                <select value={newHome} onChange={(e) => setNewHome(e.target.value)} style={{ flex: 1, padding: "6px", background: "#262626", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
+                  {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                </select>
+                <select value={newAway} onChange={(e) => setNewAway(e.target.value)} style={{ flex: 1, padding: "6px", background: "#262626", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
+                  {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                </select>
+              </div>
+              <button onClick={addNewFixture} style={{ width: "100%", padding: "8px", background: "#0ea5e9", color: "#fff", border: "none", borderRadius: "4px", fontWeight: "bold", cursor: "pointer" }}>ပွဲစဉ်စာရင်းသို့ ထည့်မည်</button>
+            </div>
+
+            {/* Fixtures List */}
             {fixtures.map((f, i) => (
               <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
-                <span style={{ fontSize: "13px" }}>{f.home} vs {f.away}</span>
-                <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "13px" }}>{f.score} ({f.status})</span>
+                <div>
+                  <span style={{ fontSize: "13px", display: "block" }}>{f.home} vs {f.away}</span>
+                  <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+                </div>
+                <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "5px 10px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
               </div>
             ))}
           </div>
