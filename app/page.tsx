@@ -119,6 +119,7 @@ export default function MLeagueApp() {
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
+        {/* Standings View */}
         {activeTab === "standings" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>အမှတ်ပေးဇယား (Standings)</h2>
@@ -158,6 +159,28 @@ export default function MLeagueApp() {
           </div>
         )}
 
+        {/* Results View (ပြီးခဲ့သောပွဲစဉ် ရလဒ်များ) */}
+        {activeTab === "results" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#facc15", marginBottom: "15px" }}>ပွဲပြီးရလဒ်များ (Results)</h2>
+            {fixtures.filter(f => f.status === "ပြီးဆုံး").length === 0 ? (
+              <p style={{ color: "#888", fontSize: "13px" }}>ပြီးဆုံးုသော ပွဲစဉ် ရလဒ်များ မရှိသေးပါ။</p>
+            ) : (
+              fixtures.filter(f => f.status === "ပြီးဆုံး").map((f, i) => (
+                <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333", textAlign: "center" }}>
+                  <span style={{ fontSize: "11px", color: "#888", display: "block", marginBottom: "4px" }}>ပွဲပြီးရလဒ်</span>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <strong style={{ fontSize: "13px", flex: 1, textAlign: "right" }}>{f.home}</strong>
+                    <span style={{ fontSize: "16px", fontWeight: "bold", color: "#22c55e", margin: "0 15px", background: bgColor, padding: "6px 12px", borderRadius: "6px" }}>{f.score}</span>
+                    <strong style={{ fontSize: "13px", flex: 1, textAlign: "left" }}>{f.away}</strong>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {/* Upcoming Matches View */}
         {activeTab === "upcoming" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#2dd4bf", marginBottom: "15px" }}>နောက်လာမည့်ပွဲစဉ်များ</h2>
@@ -177,6 +200,7 @@ export default function MLeagueApp() {
           </div>
         )}
 
+        {/* Admin Login View */}
         {activeTab === "admin" && !isAdmin && (
           <div style={{ background: cardBg, padding: "20px", borderRadius: "10px", textAlign: "center", border: "1px solid #333", marginTop: "40px" }}>
             <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>Admin Login</h3>
@@ -192,6 +216,7 @@ export default function MLeagueApp() {
           </div>
         )}
 
+        {/* Admin Live Match Control */}
         {activeTab === "live" && isAdmin && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control</h2>
@@ -228,6 +253,7 @@ export default function MLeagueApp() {
           </div>
         )}
 
+        {/* Admin Fixtures Manager */}
         {activeTab === "fixtures" && isAdmin && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
@@ -268,8 +294,10 @@ export default function MLeagueApp() {
         )}
       </div>
 
+      {/* Bottom Navigation */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333", zIndex: 1000 }}>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
+        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", cursor: "pointer", fontWeight: "bold" }}>Results</button>
         <button onClick={() => setActiveTab("upcoming")} style={{ background: "none", border: "none", color: activeTab === "upcoming" ? "#2dd4bf" : "#888", cursor: "pointer", fontWeight: "bold" }}>နောက်လာမည်</button>
         
         {isAdmin ? (
