@@ -2,10 +2,9 @@
 import { useState } from "react";
 
 export default function AdminDashboard() {
-  // Admin Password စနစ်အတွက်
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
-  const ADMIN_SECRET_PASSWORD = "1234"; // ဒီနေရာမှာ လိုချင်တဲ့ စကားဝှက်ကို ပြောင်းလဲနိုင်ပါတယ်
+  const ADMIN_SECRET_PASSWORD = "1234";
 
   const [activeTab, setActiveTab] = useState("live");
   
@@ -137,7 +136,6 @@ export default function AdminDashboard() {
     alert(`ပွဲစဉ် (${index + 1}) - ${match.homeTeam} (${match.homeScore} - ${match.awayScore}) ${match.awayTeam} ပွဲရလဒ်ကို သိမ်းဆည်းပြီးပါပြီ။`);
   };
 
-  // အကယ်၍ Admin Password မထည့်ရသေးပါက Login Form ကိုပြမည်
   if (!isAdminAuthenticated) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", display: "flex", justifyContent: "center", alignItems: "center", padding: "16px", fontFamily: "sans-serif" }}>
@@ -157,7 +155,6 @@ export default function AdminDashboard() {
     );
   }
 
-  // Password မှန်ကန်မှပေါ်မည့် Dashboard ပင်မပုံစံ
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
       <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333", color: "#ffffff" }}>
@@ -167,8 +164,9 @@ export default function AdminDashboard() {
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
         {activeTab === "live" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Live Match Control (ပွဲစဉ် ၄ ခု)</h2>
+            <h2 style={{ fontSize: "16px", color: "#22c55e", marginBottom: "15px" }}>Admin Live Match Control (ပွဲစဉ် ၄ ခု)</h2>
             
+            {/* ဤနေရာတွင် liveMatches ကို map ဖြင့် ၄ ခုစလုံး ပေါ်လာစေရန် ရေးသားထားပါသည် */}
             {liveMatches.map((match, index) => (
               <div key={index} style={{ background: cardBg, padding: "16px", borderRadius: "10px", marginBottom: "20px", border: "1px solid #333" }}>
                 <div style={{ fontSize: "13px", fontWeight: "bold", color: "#38bdf8", marginBottom: "10px", borderBottom: "1px solid #333", paddingBottom: "6px" }}>
@@ -350,3 +348,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
