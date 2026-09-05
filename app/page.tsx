@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function MLeagueApp() {
   const [activeTab, setActiveTab] = useState("standings");
@@ -10,29 +10,49 @@ export default function MLeagueApp() {
   const [cardBg, setCardBg] = useState("#1e293b");
   const [textColor, setTextColor] = useState("#f8fafc");
 
-  const [standings, setStandings] = useState([
-    { team: "Dagon Star United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yangon United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Ayeyawady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yadanarbon FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Myawady FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Thitsar Arman FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Yangon City FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Shan United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "I.S.P.E FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Chinland FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Hantharwady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-    { team: "Sagaing United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
-  ]);
+  const [standings, setStandings] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("mleague_standings");
+      if (saved) return JSON.parse(saved);
+    }
+    return [
+      { team: "Dagon Star United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Yangon United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Ayeyawady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Yadanarbon FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Myawady FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Thitsar Arman FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Yangon City FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Shan United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "I.S.P.E FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Chinland FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Hantharwady United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+      { team: "Sagaing United FC", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 },
+    ];
+  });
 
-  const [fixtures, setFixtures] = useState<any[]>([]);
+  const [fixtures, setFixtures] = useState<any[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("mleague_fixtures");
+      if (saved) return JSON.parse(saved);
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("mleague_standings", JSON.stringify(standings));
+  }, [standings]);
+
+  useEffect(() => {
+    localStorage.setItem("mleague_fixtures", JSON.stringify(fixtures));
+  }, [fixtures]);
 
   const teamsList = standings.map(s => s.team);
   const [homeTeam, setHomeTeam] = useState(teamsList[0]);
   const [awayTeam, setAwayTeam] = useState(teamsList[1]);
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
-  const [goalScorer, setGoalScorer] = useState(""); // ဂိုးသွင်းသူ အမည်အတွက်
+  const [goalScorer, setGoalScorer] = useState("");
 
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
@@ -53,7 +73,7 @@ export default function MLeagueApp() {
       return;
     }
     setFixtures([
-      { home: newHome, away: newAway, date: matchDate || "သတ်မှတ်ရန်", score: "vs", scorers: "", status: "ယှဉ်ပြိုင်မည်" }, 
+      { home: newHome, away: newAway, date: matchDate || "သတ်မှတ်ရန်", score: "0 - 0", scorers: "", status: "ယှဉ်ပြိုင်မည်" }, 
       ...fixtures
     ]);
     alert("ပွဲစဉ်အသစ် ထည့်သွင်းပြီးပါပြီ။");
@@ -62,6 +82,29 @@ export default function MLeagueApp() {
   const deleteFixture = (index: number) => {
     const updated = fixtures.filter((_, i) => i !== index);
     setFixtures(updated);
+  };
+
+  // ပွဲကို Live အဖြစ်ပြောင်းရန် (သို့မဟုတ် ရလဒ်များ တိုက်ရိုက်တင်ရန်)
+  const setMatchLive = () => {
+    if (homeTeam === awayTeam) {
+      alert("အိမ်ကွင်းနှင့် အသင်းအဝေး အသင်းတူနေ၍မရပါ။");
+      return;
+    }
+
+    const updatedFixtures = fixtures.map(f => {
+      if (f.home === homeTeam && f.away === awayTeam) {
+        return { ...f, score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "Live" };
+      }
+      return f;
+    });
+
+    const matchExists = updatedFixtures.some(f => f.home === homeTeam && f.away === awayTeam);
+    if (!matchExists) {
+      updatedFixtures.unshift({ home: homeTeam, away: awayTeam, date: "ယခုကန်နေဆဲ", score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "Live" });
+    }
+
+    setFixtures(updatedFixtures);
+    alert("ယခုပွဲစဉ်ကို Live အဖြစ် အပ်ဒိတ်လုပ်ပြီးပါပြီ။");
   };
 
   const finishMatch = () => {
@@ -102,20 +145,15 @@ export default function MLeagueApp() {
     setStandings(updatedStandings);
 
     const updatedFixtures = fixtures.map(f => {
-      if (f.home === homeTeam && f.away === awayTeam && f.status === "ယှဉ်ပြိုင်မည်") {
+      if (f.home === homeTeam && f.away === awayTeam) {
         return { ...f, score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "ပြီးဆုံး" };
       }
       return f;
     });
 
-    const matchExists = updatedFixtures.some(f => f.home === homeTeam && f.away === awayTeam && f.status === "ပြီးဆုံး");
-    if (!matchExists) {
-      updatedFixtures.unshift({ home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "ပြီးဆုံး" });
-    }
-
     setFixtures(updatedFixtures);
-    setGoalScorer(""); // Reset input
-    alert("ပွဲရလဒ်နှင့် ဂိုးသွင်းသူများကို သိမ်းဆည်းပြီးပါပြီ။");
+    setGoalScorer("");
+    alert("ပွဲသိမ်းပြီးဖြစ်၍ အမှတ်ပေးဇယားသို့ အလိုအလျောက် ထည့်သွင်းပြီးပါပြီ။");
   };
 
   return (
@@ -174,6 +212,30 @@ export default function MLeagueApp() {
 
         {activeTab === "results" && (
           <div>
+            {/* Live ပွဲများ ရှိလျှင် ထိပ်ဆုံးမှ ပြသပေးမည် */}
+            {fixtures.filter(f => f.status === "Live").length > 0 && (
+              <div style={{ marginBottom: "20px" }}>
+                <h2 style={{ fontSize: "16px", color: "#ef4444", marginBottom: "10px", display: "flex", alignItems: "center", gap: "6px" }}>
+                   <span>တိုက်ရိုက်ယှဉ်ပြိုင်နေဆဲ (LIVE)</span>
+                </h2>
+                {fixtures.filter(f => f.status === "Live").map((f, i) => (
+                  <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "2px solid #ef4444", textAlign: "center" }}>
+                    <span style={{ fontSize: "11px", color: "#ef4444", fontWeight: "bold", display: "block", marginBottom: "4px" }}> LIVE MATCH</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <strong style={{ fontSize: "13px", flex: 1, textAlign: "right" }}>{f.home}</strong>
+                      <span style={{ fontSize: "18px", fontWeight: "bold", color: "#ef4444", margin: "0 15px", background: bgColor, padding: "6px 14px", borderRadius: "6px" }}>{f.score}</span>
+                      <strong style={{ fontSize: "13px", flex: 1, textAlign: "left" }}>{f.away}</strong>
+                    </div>
+                    {f.scorers && (
+                      <div style={{ marginTop: "8px", fontSize: "12px", color: "#38bdf8", borderTop: "1px dashed #334155", paddingTop: "6px" }}>
+                         ဂိုးသွင်းသူ: {f.scorers}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
             <h2 style={{ fontSize: "16px", color: "#facc15", marginBottom: "15px" }}>ပွဲပြီးရလဒ်များ (Results)</h2>
             {fixtures.filter(f => f.status === "ပြီးဆုံး").length === 0 ? (
               <p style={{ color: "#94a3b8", fontSize: "13px" }}>ပြီးဆုံးသော ပွဲစဉ် ရလဒ်များ မရှိသေးပါ။</p>
@@ -243,7 +305,7 @@ export default function MLeagueApp() {
                   </select>
                 </div>
 
-                <div style={{ fontSize: "24px", fontWeight: "bold", color: "#38bdf8", margin: "5px 0" }}>
+                <div style={{ fontSize: "24px", fontWeight: "bold", color: "#ef4444", margin: "5px 0" }}>
                   {homeScore} - {awayScore}
                 </div>
 
@@ -273,7 +335,10 @@ export default function MLeagueApp() {
                 <button onClick={() => setAwayScore(awayScore > 0 ? awayScore - 1 : 0)} style={{ padding: "10px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "5px", cursor: "pointer", fontWeight: "bold" }}>Away -1</button>
               </div>
 
-              <button onClick={finishMatch} style={{ width: "100%", marginTop: "20px", padding: "12px", background: "#3b82f6", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>ပွဲသိမ်းမည် (Standings သို့ Auto ထည့်မည်)</button>
+              <div style={{ display: "flex", gap: "10px", marginTop: "15px" }}>
+                <button onClick={setMatchLive} style={{ flex: 1, padding: "12px", background: "#ef4444", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}> Live တင်မည်</button>
+                <button onClick={finishMatch} style={{ flex: 1, padding: "12px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}> ပွဲသိမ်းမည်</button>
+              </div>
             </div>
           </div>
         )}
@@ -309,7 +374,7 @@ export default function MLeagueApp() {
                 <div>
                   <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
                   <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
-                  <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+                  <span style={{ color: f.status === "Live" ? "#ef4444" : "#38bdf8", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   {f.scorers && <span style={{ display: "block", fontSize: "11px", color: "#94a3b8", marginTop: "2px" }}> {f.scorers}</span>}
                 </div>
                 <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
@@ -321,7 +386,7 @@ export default function MLeagueApp() {
 
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #334155", zIndex: 1000 }}>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#38bdf8" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
-        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Results</button>
+        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Results & Live</button>
         <button onClick={() => setActiveTab("upcoming")} style={{ background: "none", border: "none", color: activeTab === "upcoming" ? "#2dd4bf" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>နောက်လာမည်</button>
         
         {isAdmin ? (
