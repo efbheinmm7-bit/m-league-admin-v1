@@ -13,9 +13,11 @@ interface TeamStanding {
 }
 
 interface Fixture {
+  id: string;
   home: string;
   away: string;
   date: string;
+  time: string;
   score: string;
   status: "ယှဉ်ပြိုင်မည်" | "ပြီးဆုံး";
 }
@@ -35,11 +37,20 @@ export default function MLeagueApp() {
   const [standings, setStandings] = useState<TeamStanding[]>(
     INITIAL_TEAMS.map((team) => ({ team, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }))
   );
-  const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  
+  // Default Upcoming Fixtures
+  const [fixtures, setFixtures] = useState<Fixture[]>([
+    { id: "1", home: "Yangon United FC", away: "Shan United FC", date: "2026-09-10", time: "15:30", score: "VS", status: "ယှဉ်ပြိုင်မည်" },
+    { id: "2", home: "Yadanarbon FC", away: "Ayeyawady United FC", date: "2026-09-11", time: "15:30", score: "VS", status: "ယှဉ်ပြိုင်မည်" },
+  ]);
 
-  // Admin Live Control States
+  // Admin Controls
   const [homeTeam, setHomeTeam] = useState(INITIAL_TEAMS[0]);
   const [awayTeam, setAwayTeam] = useState(INITIAL_TEAMS[1]);
+  const [matchDate, setMatchDate] = useState("");
+  const [matchTime, setMatchTime] = useState("15:30");
+
+  const [selectedFixtureId, setSelectedFixtureId] = useState<string>("");
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
 
@@ -53,6 +64,32 @@ export default function MLeagueApp() {
     }
   };
 
+  // လာမည့်ပွဲစဉ် အသစ်ထည့်ရန်
+  const addNextMatch = () => {
+    if (homeTeam === awayTeam) {
+      alert("အသင်းနှစ်သင်း တူနေ၍မရပါ။");
+      return;
+    }
+    if (!matchDate) {
+      alert("ရက်စွဲ ရွေးချယ်ပေးပါ။");
+      return;
+    }
+
+    const newFixture: Fixture = {
+      id: Date.now().toString(),
+      home: homeTeam,
+      away: awayTeam,
+      date: matchDate,
+      time: matchTime,
+      score: "VS",
+      status: "ယှဉ်ပြိုင်မည်",
+    };
+
+    setFixtures((prev) => [...prev, newFixture]);
+    alert("ပွဲစဉ်အသစ် ထည့်သွင်းပြီးပါပြီ။");
+  };
+
+  // ပွဲပြီးရလဒ် အတည်ပြုရန်
   const finishMatch = () => {
     if (homeTeam === awayTeam) {
       alert("အသင်းနှစ်သင်း တူနေ၍မရပါ။");
@@ -78,7 +115,7 @@ export default function MLeagueApp() {
         if (item.team === awayTeam) {
           const w = item.w + (awayScore > homeScore ? 1 : 0);
           const d = item.d + (awayScore === homeScore ? 1 : 0);
-          const l = item.l + (homeScore < awayScore ? 1 : 0);
+          const l = item.l + (awayScore < homeScore ? 1 : 0);
           return {
             ...item,
             p: item.p + 1,
@@ -94,24 +131,38 @@ export default function MLeagueApp() {
       return updated.sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf);
     });
 
-    // Fixtures သို့ ရလဒ်ထည့်ခြင်း
-    setFixtures((prev) => [
-      { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" },
-      ...prev,
-    ]);
+    // Fixtures status ပြောင်းလဲခြင်း
+    setFixtures((prev) => {
+      if (selectedFixtureId) {
+        return prev.map((f) =>
+          f.id === selectedFixtureId
+            ? { ...f, score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" }
+            : f
+        );
+      } else {
+        return [
+          {
+            id: Date.now().toString(),
+            home: homeTeam,
+            away: awayTeam,
+            date: "ပြီးဆုံး",
+            time: "",
+            score: `${homeScore} - ${awayScore}`,
+            status: "ပြီးဆုံး",
+          },
+          ...prev,
+        ];
+      }
+    });
 
     setHomeScore(0);
     setAwayScore(0);
+    setSelectedFixtureId("");
     alert("ပွဲပြီးရလဒ် သိမ်းဆည်းပြီးပါပြီ။");
   };
 
-  const handleResetData = () => {
-    if (confirm("ဒေတာအားလုံးကို အစမှ ပြန်စမှာ သေချာပါသလား?")) {
-      setStandings(INITIAL_TEAMS.map((team) => ({ team, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 })));
-      setFixtures([]);
-      alert("ဒေတာများအားလုံး ပြန်လည်ရှင်းလင်းလိုက်ပါပြီ။");
-    }
-  };
+  const upcomingMatches = fixtures.filter((f) => f.status === "ယှဉ်ပြိုင်မည်");
+  const completedMatches = fixtures.filter((f) => f.status === "ပြီးဆုံး");
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#121212", color: "#f8fafc", fontFamily: "sans-serif", paddingBottom: "70px" }}>
@@ -120,6 +171,7 @@ export default function MLeagueApp() {
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
+        
         {/* Standings Tab */}
         {activeTab === "standings" && (
           <div>
@@ -157,15 +209,38 @@ export default function MLeagueApp() {
           </div>
         )}
 
+        {/* Next Match / Upcoming Tab */}
+        {activeTab === "next" && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>လာမည့် ပွဲစဉ်များ (Next Matches)</h2>
+            {upcomingMatches.length === 0 ? (
+              <p style={{ color: "#888", fontSize: "13px" }}>လာမည့် ပွဲစဉ်များ မရှိသေးပါ။</p>
+            ) : (
+              upcomingMatches.map((f) => (
+                <div key={f.id} style={{ background: "#1e1e1e", padding: "14px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
+                  <div style={{ fontSize: "11px", color: "#94a3b8", marginBottom: "8px", textAlign: "center" }}>
+                     {f.date} |  {f.time}
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "13px", flex: 1, textAlign: "right", fontWeight: "bold" }}>{f.home}</span>
+                    <span style={{ fontSize: "12px", fontWeight: "bold", color: "#38bdf8", margin: "0 12px", background: "#0f172a", padding: "4px 10px", borderRadius: "12px" }}>VS</span>
+                    <span style={{ fontSize: "13px", flex: 1, textAlign: "left", fontWeight: "bold" }}>{f.away}</span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
         {/* Results Tab */}
         {activeTab === "results" && (
           <div>
             <h2 style={{ fontSize: "16px", color: "#facc15", marginBottom: "15px" }}>ပွဲပြီးရလဒ်များ</h2>
-            {fixtures.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px" }}>ပွဲရလဒ်များ မရှိသေးပါ။</p>
+            {completedMatches.length === 0 ? (
+              <p style={{ color: "#888", fontSize: "13px" }}>ပွဲပြီးရလဒ်များ မရှိသေးပါ။</p>
             ) : (
-              fixtures.map((f, i) => (
-                <div key={i} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "8px", borderRadius: "8px", border: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              completedMatches.map((f) => (
+                <div key={f.id} style={{ background: "#1e1e1e", padding: "12px", marginBottom: "8px", borderRadius: "8px", border: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "13px", flex: 1, textAlign: "right" }}>{f.home}</span>
                   <span style={{ fontSize: "15px", fontWeight: "bold", color: "#22c55e", margin: "0 10px", background: "#121212", padding: "4px 8px", borderRadius: "4px" }}>{f.score}</span>
                   <span style={{ fontSize: "13px", flex: 1, textAlign: "left" }}>{f.away}</span>
@@ -194,41 +269,82 @@ export default function MLeagueApp() {
 
         {/* Admin Control */}
         {activeTab === "live" && isAdmin && (
-          <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
-              <h2 style={{ fontSize: "15px", color: "#22c55e", margin: 0 }}>Match Update</h2>
-              <button onClick={() => setIsAdmin(false)} style={{ padding: "4px 8px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>Logout</button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            
+            {/* Create Next Match */}
+            <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
+              <h2 style={{ fontSize: "15px", color: "#38bdf8", marginTop: 0, marginBottom: "12px" }}> လာမည့်ပွဲစဉ်ဇယား ထည့်ရန်</h2>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
+                  {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+                <div style={{ textAlign: "center", fontSize: "12px", color: "#888" }}>VS</div>
+                <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
+                  {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+                
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginTop: "6px" }}>
+                  <input type="date" value={matchDate} onChange={(e) => setMatchDate(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }} />
+                  <input type="time" value={matchTime} onChange={(e) => setMatchTime(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }} />
+                </div>
+
+                <button onClick={addNextMatch} style={{ marginTop: "8px", padding: "10px", background: "#0284c7", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
+                  Next Match ထည့်မည်
+                </button>
+              </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
-                {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+            {/* Live Score Updater */}
+            <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+                <h2 style={{ fontSize: "15px", color: "#22c55e", margin: 0 }}> Match Score Update</h2>
+                <button onClick={() => setIsAdmin(false)} style={{ padding: "4px 8px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px" }}>Logout</button>
+              </div>
+
+              {/* Select from existing upcoming matches */}
+              {upcomingMatches.length > 0 && (
+                <div style={{ marginBottom: "12px" }}>
+                  <label style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>ရှိပြီးသား ပွဲစဉ်ထဲမှ ရွေးရန်:</label>
+                  <select
+                    value={selectedFixtureId}
+                    onChange={(e) => {
+                      const fix = upcomingMatches.find(f => f.id === e.target.value);
+                      if (fix) {
+                        setSelectedFixtureId(fix.id);
+                        setHomeTeam(fix.home);
+                        setAwayTeam(fix.away);
+                      }
+                    }}
+                    style={{ width: "100%", padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}
+                  >
+                    <option value="">-- တိုက်ရိုက် ရွေးချယ်မည် --</option>
+                    {upcomingMatches.map(f => (
+                      <option key={f.id} value={f.id}>{f.home} vs {f.away} ({f.date})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div style={{ textAlign: "center", fontSize: "13px", color: "#94a3b8", marginBottom: "6px" }}>
+                {homeTeam} vs {awayTeam}
+              </div>
 
               <div style={{ textAlign: "center", fontSize: "24px", fontWeight: "bold", color: "#22c55e", margin: "5px 0" }}>
                 {homeScore} - {awayScore}
               </div>
 
-              <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
-                {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                <button onClick={() => setHomeScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Home +1</button>
+                <button onClick={() => setAwayScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Away +1</button>
+                <button onClick={() => setHomeScore(s => Math.max(0, s - 1))} style={{ padding: "6px", background: "#444", color: "#fff", border: "none", borderRadius: "4px" }}>Home -1</button>
+                <button onClick={() => setAwayScore(s => Math.max(0, s - 1))} style={{ padding: "6px", background: "#444", color: "#fff", border: "none", borderRadius: "4px" }}>Away -1</button>
+              </div>
+
+              <button onClick={finishMatch} style={{ width: "100%", marginTop: "15px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold" }}>
+                ပွဲသိမ်းမည် (Standings သို့ Auto ပေါင်းမည်)
+              </button>
             </div>
 
-            {/* Score Controller */}
-            <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
-              <button onClick={() => setHomeScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Home +1</button>
-              <button onClick={() => setAwayScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Away +1</button>
-              <button onClick={() => setHomeScore(s => Math.max(0, s - 1))} style={{ padding: "6px", background: "#444", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Home -1</button>
-              <button onClick={() => setAwayScore(s => Math.max(0, s - 1))} style={{ padding: "6px", background: "#444", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer" }}>Away -1</button>
-            </div>
-
-            <button onClick={finishMatch} style={{ width: "100%", marginTop: "15px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
-              ပွဲသိမ်းမည် (Standings သို့ Auto ပေါင်းမည်)
-            </button>
-
-            <button onClick={handleResetData} style={{ width: "100%", marginTop: "10px", padding: "8px", background: "#7f1d1d", color: "#fca5a5", border: "1px solid #991b1b", borderRadius: "6px", fontSize: "12px", cursor: "pointer" }}>
-               ဒေတာများ အားလုံးရှင်းထုတ်မည် (Reset All)
-            </button>
           </div>
         )}
       </div>
@@ -236,6 +352,7 @@ export default function MLeagueApp() {
       {/* Navigation */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#1e1e1e", display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", fontWeight: "bold", cursor: "pointer" }}>Standings</button>
+        <button onClick={() => setActiveTab("next")} style={{ background: "none", border: "none", color: activeTab === "next" ? "#38bdf8" : "#888", fontWeight: "bold", cursor: "pointer" }}>Next Match</button>
         <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", fontWeight: "bold", cursor: "pointer" }}>Results</button>
         {isAdmin ? (
           <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", fontWeight: "bold", cursor: "pointer" }}>Live Admin</button>
