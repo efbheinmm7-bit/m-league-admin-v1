@@ -363,5 +363,79 @@ export default function MLeagueApp() {
                 </thead>
                 <tbody>
                   {getLiveCalculatedStandings().map((s: any, i: number) => {
-                    let gd =
+                    let gd = s.gf - s.ga;
+                    let isTargetTeam = s.team === homeTeam || s.team === awayTeam;
+                    return (
+                      <tr key={i} style={{ borderBottom: "1px solid #334155", fontSize: "12px", backgroundColor: isTargetTeam ? "rgba(56, 189, 248, 0.1)" : "transparent" }}>
+                        <td style={{ padding: "8px", color: "#94a3b8" }}>{i + 1}</td>
+                        <td style={{ padding: "8px", fontWeight: isTargetTeam ? "bold" : "500", color: isTargetTeam ? "#38bdf8" : textColor }}>{s.team}</td>
+                        <td style={{ padding: "8px" }}>{s.p}</td>
+                        <td style={{ padding: "8px" }}>{gd}</td>
+                        <td style={{ padding: "8px", fontWeight: "bold", color: "#38bdf8" }}>{s.pts}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
 
+        {activeTab === "fixtures" && isAdmin && (
+          <div>
+            <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
+            <div style={{ background: cardBg, padding: "16px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #334155" }}>
+              <h3 style={{ fontSize: "14px", marginBottom: "12px", color: "#38bdf8" }}>ပွဲစဉ်အသစ်နှင့် ရက်စွဲ ထည့်ရန်</h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "12px" }}>
+                <div>
+                  <label style={{ fontSize: "11px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>Home Team</label>
+                  <select value={newHome} onChange={(e) => setNewHome(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #475569", borderRadius: "6px", fontSize: "13px" }}>
+                    {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: "11px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>Away Team</label>
+                  <select value={newAway} onChange={(e) => setNewAway(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #475569", borderRadius: "6px", fontSize: "13px" }}>
+                    {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ fontSize: "11px", color: "#94a3b8", display: "block", marginBottom: "4px" }}>ပွဲစဉ်မည့် ရက်စွဲနှင့် အချိန်</label>
+                  <input type="text" placeholder="ဥပမာ - June 10, 5:00 PM" value={matchDate} onChange={(e) => setMatchDate(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #475569", borderRadius: "6px", fontSize: "13px", boxSizing: "border-box" }} />
+                </div>
+              </div>
+              <button onClick={addNewFixture} style={{ width: "100%", padding: "10px", background: "#0284c7", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>ပွဲစဉ်စာရင်းသို့ ထည့်မည်</button>
+            </div>
+
+            {fixtures.map((f, i) => (
+              <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #334155" }}>
+                <div>
+                  <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
+                  <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
+                  <span style={{ color: f.status === "Live" ? "#ef4444" : "#38bdf8", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+                  {f.scorers && <span style={{ display: "block", fontSize: "11px", color: "#94a3b8", marginTop: "2px" }}> {f.scorers}</span>}
+                </div>
+                <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #334155", zIndex: 1000 }}>
+        <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#38bdf8" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
+        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Results & Live</button>
+        <button onClick={() => setActiveTab("upcoming")} style={{ background: "none", border: "none", color: activeTab === "upcoming" ? "#2dd4bf" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>နောက်လာမည်</button>
+        
+        {isAdmin ? (
+          <>
+            <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#38bdf8" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Live Control</button>
+            <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>Edit Fixtures</button>
+          </>
+        ) : (
+          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#94a3b8", cursor: "pointer", fontWeight: "bold" }}>TH</button>
+        )}
+      </div>
+    </div>
+  );
+}
