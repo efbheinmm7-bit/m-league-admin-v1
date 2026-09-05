@@ -99,10 +99,20 @@ export default function MLeagueApp() {
     });
 
     setStandings(updatedStandings);
-    setFixtures([
-      { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" }, 
-      ...fixtures
-    ]);
+
+    const updatedFixtures = fixtures.map(f => {
+      if (f.home === homeTeam && f.away === awayTeam && f.status === "ယှဉ်ပြိုင်မည်") {
+        return { ...f, score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" };
+      }
+      return f;
+    });
+
+    const matchExists = updatedFixtures.some(f => f.home === homeTeam && f.away === awayTeam && f.status === "ပြီးဆုံး");
+    if (!matchExists) {
+      updatedFixtures.unshift({ home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" });
+    }
+
+    setFixtures(updatedFixtures);
     alert("ပွဲရလဒ်ကို သိမ်းဆည်းပြီး အမှတ်ပေးဇယားသို့ ထည့်သွင်းပြီးပါပြီ။");
   };
 
@@ -201,7 +211,7 @@ export default function MLeagueApp() {
 
         {activeTab === "admin" && !isAdmin && (
           <div style={{ background: cardBg, padding: "20px", borderRadius: "10px", textAlign: "center", border: "1px solid #333", marginTop: "40px" }}>
-            <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>Admin Login</h3>
+            <h3 style={{ fontSize: "16px", marginBottom: "8px" }}>TH</h3>
             <p style={{ fontSize: "12px", color: "#888", marginBottom: "15px" }}>ထိန်းချုပ်ရန် Secret PIN ထည့်ပါ</p>
             <input 
               type="password" 
@@ -301,7 +311,7 @@ export default function MLeagueApp() {
             <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#888", cursor: "pointer", fontWeight: "bold" }}>Edit Fixtures</button>
           </>
         ) : (
-          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#888", cursor: "pointer", fontWeight: "bold" }}>Admin Login</button>
+          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#888", cursor: "pointer", fontWeight: "bold" }}>TH</button>
         )}
       </div>
     </div>
