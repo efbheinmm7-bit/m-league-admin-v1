@@ -32,7 +32,7 @@ export default function MLeagueApp() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [pin, setPin] = useState("");
 
-  const [standings, setStandings] = useState<TeamStanding[]>(
+  const [standings] = useState<TeamStanding[]>(
     INITIAL_TEAMS.map((team) => ({ team, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, pts: 0 }))
   );
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
@@ -42,7 +42,6 @@ export default function MLeagueApp() {
   const [awayTeam, setAwayTeam] = useState(INITIAL_TEAMS[1]);
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
-  const [matchMinute, setMatchMinute] = useState<number>(0); // မိနစ်အတွက် State
 
   const handleLogin = () => {
     if (pin === "2364") {
@@ -60,40 +59,7 @@ export default function MLeagueApp() {
       return;
     }
 
-    setStandings((prev) => {
-      const updated = prev.map((item) => {
-        if (item.team === homeTeam) {
-          const w = item.w + (homeScore > awayScore ? 1 : 0);
-          const d = item.d + (homeScore === awayScore ? 1 : 0);
-          const l = item.l + (homeScore < awayScore ? 1 : 0);
-          return {
-            ...item,
-            p: item.p + 1,
-            w, d, l,
-            gf: item.gf + homeScore,
-            ga: item.ga + awayScore,
-            pts: w * 3 + d * 1,
-          };
-        }
-        if (item.team === awayTeam) {
-          const w = item.w + (awayScore > homeScore ? 1 : 0);
-          const d = item.d + (awayScore === homeScore ? 1 : 0);
-          const l = item.l + (awayScore < homeScore ? 1 : 0);
-          return {
-            ...item,
-            p: item.p + 1,
-            w, d, l,
-            gf: item.gf + awayScore,
-            ga: item.ga + homeScore,
-            pts: w * 3 + d * 1,
-          };
-        }
-        return item;
-      });
-
-      return updated.sort((a, b) => b.pts - a.pts || (b.gf - b.ga) - (a.gf - a.ga));
-    });
-
+    // Fixtures သို့ ရလဒ်ထည့်ခြင်း (Standings auto-update မလုပ်တော့ပါ)
     setFixtures((prev) => [
       { home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" },
       ...prev,
@@ -101,7 +67,6 @@ export default function MLeagueApp() {
 
     setHomeScore(0);
     setAwayScore(0);
-    setMatchMinute(0);
     alert("ပွဲပြီးရလဒ် သိမ်းဆည်းပြီးပါပြီ။");
   };
 
@@ -115,11 +80,7 @@ export default function MLeagueApp() {
         {/* Standings Tab */}
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", marginBottom: "15px" }}>
-              <span style={{ color: "#facc15" }}>eFootball </span>
-              <span style={{ color: "#3b82f6" }}>M</span>
-              <span style={{ color: "#ffffff" }}>-League Table</span>
-            </h2>
+            <h2 style={{ fontSize: "16px", marginBottom: "15px", color: "#3b82f6" }}>M-League Table</h2>
             <table style={{ width: "100%", borderCollapse: "collapse", background: "#1e1e1e", borderRadius: "8px", overflow: "hidden" }}>
               <thead>
                 <tr style={{ backgroundColor: "#121212", textAlign: "left", fontSize: "12px", color: "#94a3b8" }}>
@@ -185,7 +146,7 @@ export default function MLeagueApp() {
           <div style={{ background: "#1e1e1e", padding: "16px", borderRadius: "10px", border: "1px solid #333" }}>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "15px" }}>
               <h2 style={{ fontSize: "15px", color: "#22c55e", margin: 0 }}>Match Update</h2>
-              <button onClick={() => setIsAdmin(false)} style={{ padding: "4px 8px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>Logout</button>
+              <button onClick={() => setIsAdmin(false)} style={{ padding: "4px 8px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "4px", fontSize: "12px" }}>Logout</button>
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
@@ -193,14 +154,8 @@ export default function MLeagueApp() {
                 {INITIAL_TEAMS.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
 
-              {/* ရလဒ်နှင့် မိနစ် ပြသသည့်နေရာ */}
-              <div style={{ textAlign: "center", margin: "5px 0" }}>
-                <div style={{ fontSize: "22px", fontWeight: "bold", color: "#22c55e" }}>
-                  {homeScore} - {awayScore}
-                </div>
-                <div style={{ fontSize: "13px", color: "#facc15", fontWeight: "bold", marginTop: "4px" }}>
-                  {matchMinute}' မိနစ်
-                </div>
+              <div style={{ textAlign: "center", fontSize: "20px", fontWeight: "bold", color: "#22c55e", margin: "5px 0" }}>
+                {homeScore} - {awayScore}
               </div>
 
               <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ padding: "8px", background: "#121212", color: "#fff", border: "1px solid #444", borderRadius: "4px" }}>
@@ -208,21 +163,13 @@ export default function MLeagueApp() {
               </select>
             </div>
 
-            {/* မိနစ် ထိန်းချုပ်ရန် ခလုတ်များ */}
-            <div style={{ marginTop: "15px", display: "flex", justifyContent: "center", gap: "8px" }}>
-              <button onClick={() => setMatchMinute(m => Math.max(0, m - 1))} style={{ padding: "6px 12px", background: "#334155", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" }}>Min -1</button>
-              <button onClick={() => setMatchMinute(m => m + 1)} style={{ padding: "6px 12px", background: "#0284c7", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" }}>Min +1</button>
-              <button onClick={() => setMatchMinute(m => m + 5)} style={{ padding: "6px 12px", background: "#0284c7", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontSize: "12px", fontWeight: "bold" }}>Min +5</button>
+            <div style={{ marginTop: "12px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+              <button onClick={() => setHomeScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Home +1</button>
+              <button onClick={() => setAwayScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px" }}>Away +1</button>
             </div>
 
-            {/* ဂိုး ထည့်ရန် ခလုတ်များ */}
-            <div style={{ marginTop: "10px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-              <button onClick={() => setHomeScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>Home +1</button>
-              <button onClick={() => setAwayScore(s => s + 1)} style={{ padding: "8px", background: "#22c55e", color: "#fff", border: "none", borderRadius: "4px", cursor: "pointer", fontWeight: "bold" }}>Away +1</button>
-            </div>
-
-            <button onClick={finishMatch} style={{ width: "100%", marginTop: "15px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold", cursor: "pointer" }}>
-              ပွဲသိမ်းမည် (Standings သို့ Auto ပေါင်းမည်)
+            <button onClick={finishMatch} style={{ width: "100%", marginTop: "15px", padding: "10px", background: "#2563eb", color: "#fff", border: "none", borderRadius: "6px", fontWeight: "bold" }}>
+              ပွဲသိမ်းမည်
             </button>
           </div>
         )}
@@ -230,15 +177,14 @@ export default function MLeagueApp() {
 
       {/* Navigation */}
       <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: "#1e1e1e", display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
-        <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", fontWeight: "bold", cursor: "pointer" }}>Standings</button>
-        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", fontWeight: "bold", cursor: "pointer" }}>Results</button>
+        <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", fontWeight: "bold" }}>Standings</button>
+        <button onClick={() => setActiveTab("results")} style={{ background: "none", border: "none", color: activeTab === "results" ? "#facc15" : "#888", fontWeight: "bold" }}>Results</button>
         {isAdmin ? (
-          <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", fontWeight: "bold", cursor: "pointer" }}>Live Admin</button>
+          <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", fontWeight: "bold" }}>Live Admin</button>
         ) : (
-          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#888", fontWeight: "bold", cursor: "pointer" }}>Admin</button>
+          <button onClick={() => setActiveTab("admin")} style={{ background: "none", border: "none", color: activeTab === "admin" ? "#3b82f6" : "#888", fontWeight: "bold" }}>Admin</button>
         )}
       </div>
     </div>
   );
 }
-
