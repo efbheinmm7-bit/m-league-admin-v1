@@ -6,7 +6,6 @@ export default function MLeagueApp() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [pin, setPin] = useState("");
 
-  // နောက်ခံအရောင်ကို လိုဂိုပုံစံ အပြာရောင်မှိန်မှိန် (#0f172a) သို့ ပြောင်းထားပါသည်
   const [bgColor, setBgColor] = useState("#0f172a"); 
   const [cardBg, setCardBg] = useState("#1e293b");
   const [textColor, setTextColor] = useState("#f8fafc");
@@ -33,6 +32,7 @@ export default function MLeagueApp() {
   const [awayTeam, setAwayTeam] = useState(teamsList[1]);
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
+  const [goalScorer, setGoalScorer] = useState(""); // ဂိုးသွင်းသူ အမည်အတွက်
 
   const [newHome, setNewHome] = useState(teamsList[0]);
   const [newAway, setNewAway] = useState(teamsList[1]);
@@ -53,7 +53,7 @@ export default function MLeagueApp() {
       return;
     }
     setFixtures([
-      { home: newHome, away: newAway, date: matchDate || "သတ်မှတ်ရန်", score: "vs", status: "ယှဉ်ပြိုင်မည်" }, 
+      { home: newHome, away: newAway, date: matchDate || "သတ်မှတ်ရန်", score: "vs", scorers: "", status: "ယှဉ်ပြိုင်မည်" }, 
       ...fixtures
     ]);
     alert("ပွဲစဉ်အသစ် ထည့်သွင်းပြီးပါပြီ။");
@@ -103,18 +103,19 @@ export default function MLeagueApp() {
 
     const updatedFixtures = fixtures.map(f => {
       if (f.home === homeTeam && f.away === awayTeam && f.status === "ယှဉ်ပြိုင်မည်") {
-        return { ...f, score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" };
+        return { ...f, score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "ပြီးဆုံး" };
       }
       return f;
     });
 
     const matchExists = updatedFixtures.some(f => f.home === homeTeam && f.away === awayTeam && f.status === "ပြီးဆုံး");
     if (!matchExists) {
-      updatedFixtures.unshift({ home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, status: "ပြီးဆုံး" });
+      updatedFixtures.unshift({ home: homeTeam, away: awayTeam, date: "ပြီးဆုံး", score: `${homeScore} - ${awayScore}`, scorers: goalScorer, status: "ပြီးဆုံး" });
     }
 
     setFixtures(updatedFixtures);
-    alert("ပွဲရလဒ်ကို သိမ်းဆည်းပြီး အမှတ်ပေးဇယားသို့ ထည့်သွင်းပြီးပါပြီ။");
+    setGoalScorer(""); // Reset input
+    alert("ပွဲရလဒ်နှင့် ဂိုးသွင်းသူများကို သိမ်းဆည်းပြီးပါပြီ။");
   };
 
   return (
@@ -185,6 +186,11 @@ export default function MLeagueApp() {
                     <span style={{ fontSize: "16px", fontWeight: "bold", color: "#38bdf8", margin: "0 15px", background: bgColor, padding: "6px 12px", borderRadius: "6px" }}>{f.score}</span>
                     <strong style={{ fontSize: "13px", flex: 1, textAlign: "left" }}>{f.away}</strong>
                   </div>
+                  {f.scorers && (
+                    <div style={{ marginTop: "8px", fontSize: "12px", color: "#38bdf8", borderTop: "1px dashed #334155", paddingTop: "6px" }}>
+                       ဂိုးသွင်းသူ: {f.scorers}
+                    </div>
+                  )}
                 </div>
               ))
             )}
@@ -247,6 +253,17 @@ export default function MLeagueApp() {
                     {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
                   </select>
                 </div>
+
+                <div>
+                  <label style={{ fontSize: "12px", color: "#94a3b8", display: "block", marginBottom: "4px", textAlign: "left" }}>ဂိုးသွင်းသည့် ကစားသမားအမည်</label>
+                  <input 
+                    type="text" 
+                    placeholder="ဥပမာ - Aung Thu (12', 45')" 
+                    value={goalScorer} 
+                    onChange={(e) => setGoalScorer(e.target.value)} 
+                    style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #475569", borderRadius: "6px", fontSize: "13px", boxSizing: "border-box" }} 
+                  />
+                </div>
               </div>
 
               <div style={{ marginTop: "15px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
@@ -293,6 +310,7 @@ export default function MLeagueApp() {
                   <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
                   <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
                   <span style={{ color: "#38bdf8", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
+                  {f.scorers && <span style={{ display: "block", fontSize: "11px", color: "#94a3b8", marginTop: "2px" }}> {f.scorers}</span>}
                 </div>
                 <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
               </div>
@@ -318,4 +336,3 @@ export default function MLeagueApp() {
     </div>
   );
 }
-
