@@ -103,14 +103,9 @@ export default function AdminDashboard() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: bgColor, color: textColor, fontFamily: "sans-serif", paddingBottom: "70px", transition: "background 0.3s" }}>
-      <div style={{ backgroundColor: cardBg, padding: "16px", textAlign: "center", fontSize: "18px", fontWeight: "bold", borderBottom: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span>M-League Admin Control</span>
-        
-        <div style={{ display: "flex", gap: "6px" }}>
-          <button onClick={() => { setBgColor("#121212"); setCardBg("#1e1e1e"); setTextColor("#f8fafc"); }} style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#121212", border: "2px solid #fff", cursor: "pointer" }} title="Dark Mode"></button>
-          <button onClick={() => { setBgColor("#0f172a"); setCardBg("#1e293b"); setTextColor("#f8fafc"); }} style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#0f172a", border: "2px solid #38bdf8", cursor: "pointer" }} title="Blue Dark Mode"></button>
-          <button onClick={() => { setBgColor("#f1f5f9"); setCardBg("#ffffff"); setTextColor("#0f172a"); }} style={{ width: "18px", height: "18px", borderRadius: "50%", background: "#ffffff", border: "2px solid #cbd5e1", cursor: "pointer" }} title="Light Mode"></button>
-        </div>
+      {/* Header Bar */}
+      <div style={{ backgroundColor: cardBg, padding: "12px 16px", textAlign: "center", fontSize: "15px", fontWeight: "bold", borderBottom: "1px solid #333" }}>
+        <span style={{ color: "#38bdf8" }}>M</span> League One
       </div>
 
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
@@ -194,7 +189,7 @@ export default function AdminDashboard() {
             <h2 style={{ fontSize: "16px", color: "#38bdf8", marginBottom: "15px" }}>ပွဲစဉ်များ စီမံရန်</h2>
             
             <div style={{ background: cardBg, padding: "16px", borderRadius: "8px", marginBottom: "20px", border: "1px solid #333" }}>
-              <h3 style={{ fontSize: "14px", marginBottom: "12px", color: "#38bdf8" }}>ပွဲစဉ်အသစ်နှင့် ရက်စွဲ ထည့်ရန်</h3>
+              <h3 style={{ fontSize: "14px", marginBottom: "12px", color: "#38bdf8" }}>ပွဲစဉ်အသစ် ထည့်ရန်</h3>
               
               <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "12px" }}>
                 <div>
@@ -227,12 +222,12 @@ export default function AdminDashboard() {
             </div>
 
             {fixtures.length === 0 ? (
-              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။</p>
+              <p style={{ color: "#888", fontSize: "13px", textAlign: "center" }}>ပွဲစဉ်များ မရှိသေးပါ။ အထက်ပါပုံစံမှတဆင့် ပွဲစဉ်အသစ် ထည့်ပါ။</p>
             ) : (
               fixtures.map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "12px", marginBottom: "10px", borderRadius: "8px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid #333" }}>
                   <div>
-                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}>{f.date}</span>
+                    <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
                     <span style={{ fontSize: "13px", display: "block", fontWeight: "bold" }}>{f.home} vs {f.away}</span>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
@@ -251,7 +246,7 @@ export default function AdminDashboard() {
             ) : (
               fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
                 <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}>{f.date}</span>
+                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
                   <div style={{ textAlign: "center" }}>
                     <strong style={{ fontSize: "13px" }}>{f.home}</strong> vs <strong style={{ fontSize: "13px" }}>{f.away}</strong>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
@@ -263,7 +258,8 @@ export default function AdminDashboard() {
         )}
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333", zIndex: 10 }}>
+      {/* Bottom Navigation */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: cardBg, display: "flex", justifyContent: "space-around", padding: "12px 0", borderTop: "1px solid #333" }}>
         <button onClick={() => setActiveTab("live")} style={{ background: "none", border: "none", color: activeTab === "live" ? "#22c55e" : "#888", cursor: "pointer", fontWeight: "bold" }}>Live</button>
         <button onClick={() => setActiveTab("standings")} style={{ background: "none", border: "none", color: activeTab === "standings" ? "#c084fc" : "#888", cursor: "pointer", fontWeight: "bold" }}>Standings</button>
         <button onClick={() => setActiveTab("fixtures")} style={{ background: "none", border: "none", color: activeTab === "fixtures" ? "#38bdf8" : "#888", cursor: "pointer", fontWeight: "bold" }}>Fixtures</button>
@@ -272,4 +268,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-k
