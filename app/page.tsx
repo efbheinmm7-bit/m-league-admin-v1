@@ -26,6 +26,8 @@ export default function AdminDashboard() {
   const [fixtures, setFixtures] = useState<any[]>([]);
 
   const teamsList = standings.map(s => s.team);
+  
+  // Live Match အတွက် လက်ရှိ ထိန်းချုပ်နေသော အသင်းများနှင့် ဂိုးများ
   const [homeTeam, setHomeTeam] = useState(teamsList[0]);
   const [awayTeam, setAwayTeam] = useState(teamsList[1]);
   const [homeScore, setHomeScore] = useState(0);
@@ -38,6 +40,27 @@ export default function AdminDashboard() {
   const getTeamColor = (teamName: string) => {
     const found = standings.find(s => s.team === teamName);
     return found ? found.color : "#ffffff";
+  };
+
+  // Team Badge Component (အသင်းပုံစံ တံဆိပ်လေး)
+  const TeamBadge = ({ teamName }: { teamName: string }) => {
+    const color = getTeamColor(teamName);
+    return (
+      <span style={{ 
+        backgroundColor: color, 
+        color: "#000", 
+        padding: "2px 6px", 
+        borderRadius: "4px", 
+        fontSize: "10px", 
+        fontWeight: "bold",
+        textTransform: "uppercase",
+        boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+        border: "1px solid rgba(255,255,255,0.3)",
+        display: "inline-block"
+      }}>
+        {teamName.split(" ")[0]}
+      </span>
+    );
   };
 
   const addNewFixture = () => {
@@ -61,6 +84,15 @@ export default function AdminDashboard() {
   const deleteFixture = (index: number) => {
     const updated = fixtures.filter((_, i) => i !== index);
     setFixtures(updated);
+  };
+
+  const startLiveMatch = (home: string, away: string) => {
+    setHomeTeam(home);
+    setAwayTeam(away);
+    setHomeScore(0);
+    setAwayScore(0);
+    setActiveTab("live");
+    alert(`${home} vs ${away} ပွဲစဉ်ကို Live Control သို့ တင်လိုက်ပါပြီ။`);
   };
 
   const finishMatch = () => {
@@ -121,9 +153,12 @@ export default function AdminDashboard() {
               <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "15px" }}>
                 <div>
                   <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px", textAlign: "left" }}>Home Team</label>
-                  <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px" }}>
-                    {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
-                  </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ width: "12px", height: "12px", borderRadius: "3px", backgroundColor: getTeamColor(homeTeam) }}></span>
+                    <select value={homeTeam} onChange={(e) => setHomeTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px" }}>
+                      {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                    </select>
+                  </div>
                 </div>
 
                 <div style={{ fontSize: "24px", fontWeight: "bold", color: "#22c55e", margin: "5px 0" }}>
@@ -132,9 +167,12 @@ export default function AdminDashboard() {
 
                 <div>
                   <label style={{ fontSize: "12px", color: "#888", display: "block", marginBottom: "4px", textAlign: "left" }}>Away Team</label>
-                  <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px" }}>
-                    {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
-                  </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ width: "12px", height: "12px", borderRadius: "3px", backgroundColor: getTeamColor(awayTeam) }}></span>
+                    <select value={awayTeam} onChange={(e) => setAwayTeam(e.target.value)} style={{ width: "100%", padding: "10px", background: bgColor, color: textColor, border: "1px solid #444", borderRadius: "6px", fontSize: "14px" }}>
+                      {teamsList.map((t, i) => <option key={i} value={t}>{t}</option>)}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -174,8 +212,8 @@ export default function AdminDashboard() {
                       <tr key={i} style={{ borderBottom: "1px solid #2a2a2a", fontSize: "13px" }}>
                         <td style={{ padding: "10px", color: "#888" }}>{i + 1}</td>
                         <td style={{ padding: "10px", fontWeight: "500", display: "flex", alignItems: "center", gap: "8px" }}>
-                          <span style={{ width: "10px", height: "10px", borderRadius: "50%", backgroundColor: s.color, display: "inline-block" }}></span>
-                          {s.team}
+                          <TeamBadge teamName={s.team} />
+                          <span>{s.team}</span>
                         </td>
                         <td style={{ padding: "10px" }}>{s.p}</td>
                         <td style={{ padding: "10px" }}>{s.w}</td>
@@ -237,15 +275,21 @@ export default function AdminDashboard() {
                   <div>
                     <span style={{ fontSize: "11px", color: "#38bdf8", display: "block", marginBottom: "2px" }}> {f.date}</span>
                     <div style={{ fontSize: "13px", display: "flex", alignItems: "center", gap: "6px", fontWeight: "bold", margin: "3px 0" }}>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.home) }}></span>
+                      <TeamBadge teamName={f.home} />
                       <span>{f.home}</span>
                       <span style={{ color: "#888", fontWeight: "normal" }}>vs</span>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.away) }}></span>
+                      <TeamBadge teamName={f.away} />
                       <span>{f.away}</span>
                     </div>
                     <span style={{ color: "#22c55e", fontWeight: "bold", fontSize: "12px" }}>{f.score} ({f.status})</span>
                   </div>
-                  <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 12px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
+                  
+                  <div style={{ display: "flex", gap: "6px" }}>
+                    {f.status === "ယှဉ်ပြိုင်မည်" && (
+                      <button onClick={() => startLiveMatch(f.home, f.away)} style={{ background: "#22c55e", color: "#fff", border: "none", padding: "6px 10px", borderRadius: "4px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}>Live ထိန်းမည်</button>
+                    )}
+                    <button onClick={() => deleteFixture(i)} style={{ background: "#dc2626", color: "#fff", border: "none", padding: "6px 10px", borderRadius: "4px", fontSize: "12px", cursor: "pointer" }}>ဖျက်မည်</button>
+                  </div>
                 </div>
               ))
             )}
@@ -259,18 +303,19 @@ export default function AdminDashboard() {
               <p style={{ color: "#888", fontSize: "13px" }}>ယှဉ်ပြိုင်ရန် ကျန်ရှိသော ပွဲစဉ် မရှိသေးပါ။</p>
             ) : (
               fixtures.filter(f => f.status === "ယှဉ်ပြိုင်မည်").map((f, i) => (
-                <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333" }}>
-                  <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "13px", display: "flex", justifyContent: "center", alignItems: "center", gap: "6px", fontWeight: "bold" }}>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.home) }}></span>
+                <div key={i} style={{ background: cardBg, padding: "15px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #333", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <span style={{ fontSize: "11px", color: "#2dd4bf", display: "block", marginBottom: "4px" }}> {f.date}</span>
+                    <div style={{ fontSize: "13px", display: "flex", alignItems: "center", gap: "6px", fontWeight: "bold" }}>
+                      <TeamBadge teamName={f.home} />
                       <span>{f.home}</span>
                       <span style={{ color: "#888", fontWeight: "normal" }}>vs</span>
-                      <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: getTeamColor(f.away) }}></span>
+                      <TeamBadge teamName={f.away} />
                       <span>{f.away}</span>
                     </div>
                     <p style={{ color: "#2dd4bf", marginTop: "5px", fontSize: "12px" }}>ယှဉ်ပြိုင်မည်</p>
                   </div>
+                  <button onClick={() => startLiveMatch(f.home, f.away)} style={{ background: "#22c55e", color: "#fff", border: "none", padding: "8px 12px", borderRadius: "6px", fontSize: "12px", cursor: "pointer", fontWeight: "bold" }}>Live ထိန်းမည်</button>
                 </div>
               ))
             )}
@@ -288,3 +333,4 @@ export default function AdminDashboard() {
     </div>
   );
 }
+
