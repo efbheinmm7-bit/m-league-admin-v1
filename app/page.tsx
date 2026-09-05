@@ -121,7 +121,9 @@ export default function MLeagueApp() {
       <div style={{ padding: "16px", maxWidth: "600px", margin: "0 auto" }}>
         {activeTab === "standings" && (
           <div>
-            <h2 style={{ fontSize: "16px", color: "#c084fc", marginBottom: "15px" }}>အမှတ်ပေးဇယား (Standings)</h2>
+            <h2 style={{ fontSize: "16px", marginBottom: "15px" }}>
+              <span style={{ color: "#3b82f6" }}>M</span> <span style={{ color: "#ffffff" }}>League 2026-27</span>
+            </h2>
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse", background: cardBg, borderRadius: "8px", overflow: "hidden" }}>
                 <thead>
@@ -305,4 +307,3 @@ export default function MLeagueApp() {
     </div>
   );
 }
-
